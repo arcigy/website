@@ -12,7 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let CURRENT_VIEW_YEAR;
     let CURRENT_VIEW_MONTH; // 1-12
-    const DEFAULT_BACKEND_URL = 'https://my-website-backend-production-25c8.up.railway.app';
+    const DEFAULT_BACKEND_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+        ? 'http://localhost:8000' 
+        : 'https://my-website-backend-production-c000.up.railway.app';
     const BACKEND_URL = window.ARCIGY_BACKEND_URL || DEFAULT_BACKEND_URL;
     const CHAT_WEBHOOK_URL = `${BACKEND_URL}/webhook/chat`;
     const CALENDAR_AVAILABILITY_URL = `${BACKEND_URL}/webhook/calendar-availability-check`;
