@@ -253,15 +253,13 @@
 
                     if (!response.ok) throw new Error('Failed to save audit');
                     console.log('✅ Audit saved successfully');
+                    window.location.href = 'audit-success.html';
                 } catch (err) {
                     console.error('❌ Audit save error:', err);
+                    window.location.href = 'audit-success.html';
                 } finally {
                     btn.disabled = false;
                     btn.textContent = originalText;
-                }
-
-                if (window.arcigyCalendar) {
-                    window.arcigyCalendar.open();
                 }
             });
         });

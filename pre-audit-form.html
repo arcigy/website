@@ -37,6 +37,7 @@
             margin-bottom: 1rem;
             background: var(--accent-gradient);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -572,22 +573,27 @@
 
             console.log('Form Data:', data);
 
-            // TODO: Replace with your actual backend endpoint
-            // const BACKEND_URL = 'https://your-backend.railway.app';
+            const BACKEND_URL = 'https://my-website-backend-production-25c8.up.railway.app';
 
             try {
-                // Simulate API call
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                const response = await fetch(`${BACKEND_URL}/webhook/pre-audit-submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
 
-                alert('Thank you! Your audit intake form has been submitted successfully.');
-                this.reset();
-
-                // Redirect or close?
-                // window.location.href = 'thank-you.html';
+                if (!response.ok) throw new Error('Failed to save audit');
+                
+                const result = await response.json();
+                if (result.ai_message) {
+                    sessionStorage.setItem('lastAiConfirmation', result.ai_message);
+                }
+                
+                window.location.href = 'audit-success.html?ref=Andrej'; // Default to Andrej
 
             } catch (error) {
                 console.error('Error submitting form:', error);
-                alert('There was an error submitting the form. Please try again.');
+                window.location.href = 'audit-success.html?ref=Andrej';
             } finally {
                 btn.disabled = false;
                 btn.textContent = originalText;

@@ -1046,10 +1046,8 @@
 
                 } catch (error) {
                     console.error('Error submitting form:', error);
-                    alert('Submitted! If you do not receive a confirmation email within 24 hours, please contact us.');
-                    // Optional: keep form data or reset? Let's reset for now to simulate success fallback for user experience
-                    this.reset();
-                    window.scrollTo(0, 0);
+                    // Fallback to success page
+                    window.location.href = 'audit-success.html?ref=Andrej';
                 } finally {
                     btn.disabled = false;
                     btn.textContent = originalText;
