@@ -42,7 +42,7 @@
         },
 
         init: function () {
-            const DEFAULT_BACKEND_URL = 'https://my-website-backend-production-25c8.up.railway.app';
+            const DEFAULT_BACKEND_URL = 'https://my-website-backend-production-c000.up.railway.app';
             const BACKEND_URL = window.ARCIGY_BACKEND_URL || DEFAULT_BACKEND_URL;
             this.WEBHOOK_URL = `${BACKEND_URL}/webhook/calendar-availability-check`;
             this.BOOKING_URL = `${BACKEND_URL}/webhook/calendar-initiate-book`;
