@@ -1019,25 +1019,25 @@
       <!-- Video Pane (First Fold) -->
       <div class="ukazka-video-pane">
         <!-- Pozadie s lietajúcimi svetielkami -->
-        <canvas id="ukazka-canvas-bg" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;"></canvas>
+        <canvas id="ukazka-canvas-bg"></canvas>
         
         <!-- Čierne pozadie (zatmenie) -->
-        <div id="ukazka-bg" style="z-index: 10;"></div>
+        <div id="ukazka-bg"></div>
         
         <!-- Logo animácia -->
-        <div id="ukazka-logo-container" aria-hidden="true" style="z-index: 20;">
+        <div id="ukazka-logo-container" aria-hidden="true">
             <img src="GRADIENT_LOGO ONLY.png" alt="ArciGy Logo">
             <img src="GRADIENT_TEXT ONLY.png" alt="ArciGy">
         </div>
         
         <!-- YouTube iFrame -->
-        <div id="ukazka-video-container" aria-label="Video prezentácia" style="z-index: 5;">
+        <div id="ukazka-video-container" aria-label="Video prezentácia">
           <div id="ukazka-player-wrapper"></div>
           <!-- Shield odstránený aby fungovala lišta -->
         </div>
         
         <!-- End-of-video overlay -->
-        <div id="ukazka-end-overlay" aria-hidden="true" style="z-index: 30;">
+        <div id="ukazka-end-overlay" aria-hidden="true">
           <div id="ukazka-scroll-hint">
             <span id="ukazka-scroll-text">Pokračuj nižšie</span>
             <div id="ukazka-arrow-container" aria-hidden="true">
