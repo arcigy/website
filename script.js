@@ -1950,10 +1950,15 @@ function onPlayerStateChange(event) {
         if (!ytProgressInterval) {
             ytProgressInterval = setInterval(checkVideoProgress, 500);
         }
+        const endOverlay = document.getElementById('ukazka-end-overlay');
+        if (endOverlay) endOverlay.classList.remove('visible');
     } else {
         if (ytProgressInterval) {
             clearInterval(ytProgressInterval);
             ytProgressInterval = null;
+        }
+        if (event.data == YT.PlayerState.ENDED) {
+            handleVideoEnd();
         }
     }
 }
@@ -1965,9 +1970,30 @@ function checkVideoProgress() {
     const currentTime = ytPlayer.getCurrentTime();
     const timeLeft = duration - currentTime;
     
-    // Trigger scroll prompt 8 seconds before end, or if it ended
-    if (timeLeft <= 8 && duration > 0) {
+    // Trigger scroll prompt 8 seconds before end
+    if (timeLeft <= 8 && timeLeft > 0 && duration > 0) {
         showScrollPrompt();
+    }
+    
+    // End overlay trigger fallback just in case
+    if (timeLeft <= 0.5 && duration > 0) {
+        handleVideoEnd();
+    }
+}
+
+async function handleVideoEnd() {
+    const endOverlay = document.getElementById('ukazka-end-overlay');
+    const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    if (endOverlay && !endOverlay.classList.contains('visible')) {
+        endOverlay.classList.add('visible');
+        
+        await wait(2000);
+        
+        const calendlySection = document.getElementById('videoCalendlySection');
+        if (calendlySection) {
+            calendlySection.scrollIntoView({ behavior: 'smooth' });
+        }
     }
 }
 
@@ -2020,7 +2046,7 @@ function initVideoModal() {
         }
     }
 
-    function openModal() {
+    async function openModal() {
         modal.classList.add('active');
         document.body.classList.add('modal-open');
         document.documentElement.classList.add('modal-open');
@@ -2029,6 +2055,35 @@ function initVideoModal() {
         window.addEventListener('wheel', preventBackgroundScroll, { passive: false });
         window.addEventListener('touchmove', preventBackgroundScroll, { passive: false });
         
+        const bg = document.getElementById('ukazka-bg');
+        const logo = document.getElementById('ukazka-logo-container');
+        const endOverlay = document.getElementById('ukazka-end-overlay');
+        const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        
+        if (endOverlay) endOverlay.classList.remove('visible');
+        
+        // Animated intro flow
+        if (bg) bg.classList.add('visible');
+        await wait(100);
+        
+        if (logo) {
+            logo.style.display = '';
+            logo.classList.remove('hiding');
+            logo.classList.add('visible');
+        }
+
+        await wait(1800); // Logo display time
+        
+        if (logo) {
+            logo.classList.remove('visible');
+            logo.classList.add('hiding');
+        }
+        
+        await wait(500); // Logo hiding time
+        
+        if (logo) logo.style.display = 'none';
+        if (bg) bg.classList.remove('visible'); // Show video underneath
+
         if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
             ytPlayer.seekTo(0);
             ytPlayer.playVideo();
@@ -2040,6 +2095,17 @@ function initVideoModal() {
         modal.classList.remove('active');
         document.body.classList.remove('modal-open');
         document.documentElement.classList.remove('modal-open');
+        
+        const bg = document.getElementById('ukazka-bg');
+        const logo = document.getElementById('ukazka-logo-container');
+        const endOverlay = document.getElementById('ukazka-end-overlay');
+        
+        if (bg) bg.classList.remove('visible');
+        if (logo) {
+            logo.classList.remove('visible', 'hiding');
+            logo.style.display = '';
+        }
+        if (endOverlay) endOverlay.classList.remove('visible');
         
         window.removeEventListener('wheel', preventBackgroundScroll);
         window.removeEventListener('touchmove', preventBackgroundScroll);

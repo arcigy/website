@@ -1017,8 +1017,37 @@
                     
                     <!-- Slide 1: Video -->
                     <div class="slider-slide video-slide">
-                        <div class="video-container">
-                            <div id="youtubePlayer"></div>
+                        <!-- Video & Overlays Container -->
+                        <div class="video-container" id="ukazka-video-container">
+                            
+                            <!-- 1. Black BG layer for transitions -->
+                            <div id="ukazka-bg"></div>
+
+                            <!-- 2. Logo Animation Layer -->
+                            <div id="ukazka-logo-container" aria-hidden="true">
+                                <img src="GRADIENT_LOGO ONLY.png" alt="ArciGy Logo">
+                                <img src="GRADIENT_TEXT ONLY.png" alt="ArciGy">
+                            </div>
+
+                            <!-- 3. YouTube Player Layer -->
+                            <div id="ukazka-player-wrapper">
+                                <div id="youtubePlayer"></div>
+                            </div>
+                            <div id="ukazka-video-shield" aria-hidden="true"></div>
+
+                            <!-- 4. End-of-Video Overlay Layer -->
+                            <div id="ukazka-end-overlay" aria-hidden="true">
+                                <div id="ukazka-scroll-hint">
+                                    <span id="ukazka-scroll-text">Pokračuj nižšie</span>
+                                    <div id="ukazka-arrow-container" aria-hidden="true">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                                            <polyline points="19 12 12 19 5 12"></polyline>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                         
                         <div id="videoScrollPrompt" class="video-scroll-prompt">
