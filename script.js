@@ -1921,3 +1921,131 @@ function initCustomScrollbar() {
 
     window.addEventListener('touchend', endDrag);
 }
+// --- Welcome Video & Calendly Modal Logic ---
+let ytPlayer;
+let ytProgressInterval;
+
+// This function is required by YouTube API when it's ready
+function onYouTubeIframeAPIReady() {
+    ytPlayer = new YT.Player('youtubePlayer', {
+        height: '100%',
+        width: '100%',
+        videoId: 'Rt3cXNwLlmk',
+        playerVars: {
+            'autoplay': 0,
+            'rel': 0,
+            'modestbranding': 1
+        },
+        events: {
+            'onStateChange': onPlayerStateChange
+        }
+    });
+}
+
+function onPlayerStateChange(event) {
+    if (event.data == YT.PlayerState.PLAYING) {
+        // Start checking time
+        if (!ytProgressInterval) {
+            ytProgressInterval = setInterval(checkVideoProgress, 500);
+        }
+    } else {
+        // Stop checking if paused/ended
+        if (ytProgressInterval) {
+            clearInterval(ytProgressInterval);
+            ytProgressInterval = null;
+        }
+    }
+}
+
+function checkVideoProgress() {
+    if (!ytPlayer || !ytPlayer.getCurrentTime) return;
+    
+    const duration = ytPlayer.getDuration();
+    const currentTime = ytPlayer.getCurrentTime();
+    const timeLeft = duration - currentTime;
+    
+    // Trigger scroll prompt 5 seconds before end, or if it ended
+    if (timeLeft <= 5 && duration > 0) {
+        showScrollPrompt();
+    }
+}
+
+function showScrollPrompt() {
+    const prompt = document.getElementById('videoScrollPrompt');
+    const calendly = document.getElementById('videoCalendlySection');
+    const contentBox = document.querySelector('.video-modal-content');
+    
+    if (prompt && !prompt.classList.contains('active')) {
+        prompt.classList.add('active');
+    }
+    if (calendly && !calendly.classList.contains('active')) {
+        calendly.classList.add('active');
+    }
+    if (contentBox && !contentBox.classList.contains('scroll-unlocked')) {
+        contentBox.classList.add('scroll-unlocked');
+    }
+}
+
+function resetScrollPrompt() {
+    const prompt = document.getElementById('videoScrollPrompt');
+    const calendly = document.getElementById('videoCalendlySection');
+    const contentBox = document.querySelector('.video-modal-content');
+    
+    if (prompt) prompt.classList.remove('active');
+    if (calendly) calendly.classList.remove('active');
+    if (contentBox) contentBox.classList.remove('scroll-unlocked');
+}
+
+function initVideoModal() {
+    const videoBtn = document.getElementById('heroVideoBtn');
+    const modal = document.getElementById('videoModal');
+    const overlay = document.getElementById('videoModalOverlay');
+    const closeBtn = document.getElementById('closeVideoBtn');
+    const contentBox = document.querySelector('.video-modal-content');
+
+    if (!videoBtn || !modal) return;
+
+    function openModal() {
+        modal.classList.add('active');
+        document.body.classList.add('modal-open');
+        
+        // Ensure scroll is at top
+        if (contentBox) contentBox.scrollTop = 0;
+        
+        // Play video if ready
+        if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+            ytPlayer.seekTo(0);
+            ytPlayer.playVideo();
+            resetScrollPrompt();
+        }
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+        document.body.classList.remove('modal-open');
+        
+        if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+            ytPlayer.pauseVideo();
+        }
+        if (ytProgressInterval) {
+            clearInterval(ytProgressInterval);
+            ytProgressInterval = null;
+        }
+    }
+
+    videoBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal();
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    if (overlay) overlay.addEventListener('click', closeModal);
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initVideoModal);
