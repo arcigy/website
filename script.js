@@ -2065,43 +2065,17 @@ function initVideoModal() {
         }
     });
 
-    // Slider Swipe & Scroll Logic
-    let startY = 0;
+    const contentBox = document.querySelector('.video-modal-content');
     
-    if (slider) {
-        // Handle Mouse Scroll
-        slider.addEventListener('wheel', (e) => {
-            // Scroll is always allowed now, no !calendlyUnlocked guard
-            if (e.deltaY > 40) {
-                slider.classList.add('show-calendly');
-            } else if (e.deltaY < -40) {
-                slider.classList.remove('show-calendly');
-            }
-        });
-
-        // Handle Touch Swipe
-        slider.addEventListener('touchstart', (e) => {
-            startY = e.touches[0].clientY;
-        });
-
-        slider.addEventListener('touchend', (e) => {
-            // Scroll is always allowed now
-            let endY = e.changedTouches[0].clientY;
-            let diff = startY - endY;
-
-            if (diff > 40) { // Swipe up
-                slider.classList.add('show-calendly');
-            } else if (diff < -40) { // Swipe down
-                slider.classList.remove('show-calendly');
-            }
-        });
-    }
-
     // Allow clicking prompt to advance to calendly
     if (prompt) {
         prompt.addEventListener('click', () => {
-            if (slider) {
-                slider.classList.add('show-calendly');
+            if (contentBox) {
+                // Scroll specifically to the Calendly section smoothly
+                const calendlySection = document.getElementById('videoCalendlySection');
+                if (calendlySection) {
+                    calendlySection.scrollIntoView({ behavior: 'smooth' });
+                }
             }
         });
     }
