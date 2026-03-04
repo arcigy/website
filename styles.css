@@ -2445,9 +2445,9 @@ button[type="submit"]:disabled::after {
 
 .video-modal-wrapper {
   position: relative;
-  width: 90%;
-  max-width: 1000px;
-  max-height: 90vh;
+  width: 96vw;
+  max-width: 1500px; /* Much larger, almost fullscreen */
+  max-height: 96vh;
   z-index: 10001;
   display: flex;
   flex-direction: column;
@@ -2463,36 +2463,60 @@ button[type="submit"]:disabled::after {
   background: var(--bg-primary);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--card-radius);
-  padding: 8px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  overflow-y: hidden; /* Locked initially */
-  overflow-x: hidden;
-  max-height: calc(90vh - 40px); /* leave space for close btn */
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: calc(95vh - 40px); /* Fill most of the screen */
 }
 
-.video-modal-content.scroll-unlocked {
-  overflow-y: auto; /* Unlocks exactly 5s before end or at end */
+.video-modal-slider {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 200%; /* Holds two 100% slides */
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+  transform: translateY(0);
 }
 
-/* Custom Scrollbar for modal content */
-.video-modal-content::-webkit-scrollbar {
-  width: 6px;
+.video-modal-slider.show-calendly {
+  transform: translateY(-50%);
 }
-.video-modal-content::-webkit-scrollbar-track {
-  background: transparent;
+
+.slider-slide {
+  height: 50%; /* 100% of the visible modal */
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
-.video-modal-content::-webkit-scrollbar-thumb {
-  background: rgba(122, 241, 255, 0.2);
-  border-radius: 10px;
+
+.video-slide {
+  padding: 10px; /* smaller padding for more video space */
 }
-.video-modal-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(122, 241, 255, 0.4);
+
+.calendly-slide {
+  background: var(--bg-primary);
+}
+
+.video-calendly-section {
+  padding: 20px 10px;
+  text-align: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.calendly-inline-widget {
+  flex-grow: 1;
 }
 
 .video-modal-close {
   position: absolute;
-  top: -35px;
-  right: 0;
+  top: -30px;
+  right: 10px; /* Adjusting close btn for wider modal */
   background: none;
   border: none;
   color: #ffffff;
@@ -2511,11 +2535,13 @@ button[type="submit"]:disabled::after {
 
 .video-container {
   position: relative;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  padding-bottom: 56.25%; /* 16:9 */
+  max-height: 80vh; /* Don't overflow the slide */
   height: 0;
   overflow: hidden;
   border-radius: calc(var(--card-radius) - 4px);
   background: #000;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 .video-container iframe {
@@ -2528,21 +2554,35 @@ button[type="submit"]:disabled::after {
 }
 
 /* Body lock classes */
-body.modal-open {
+html.modal-open, body.modal-open {
   overflow: hidden !important;
+  touch-action: none !important; /* block mobile scroll entirely */
 }
 body.modal-open .custom-scrollbar-container {
   display: none !important;
 }
 
-/* Scroll Animations */
+/* Swipe Hint Animation (Instagram style) */
+@keyframes swipeUpHint {
+  0%   { transform: translateY(0); }
+  35%  { transform: translateY(-15vh); } /* strong upward tug */
+  60%  { transform: translateY(-15vh); } /* hold it to show calendly slightly */
+  100% { transform: translateY(0); }
+}
+
+.video-modal-slider.hint-active {
+  animation: swipeUpHint 1.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* Prompt Elements */
 .video-scroll-prompt {
   text-align: center;
-  padding: 40px 0;
+  padding: 20px 0;
   display: none;
   opacity: 0;
   flex-direction: column;
   align-items: center;
+  cursor: pointer; /* hint that it's clickable */
 }
 .video-scroll-prompt.active {
   display: flex;
@@ -2558,7 +2598,6 @@ body.modal-open .custom-scrollbar-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: -5px;
 }
 
 .scroll-chevron {
@@ -2576,14 +2615,4 @@ body.modal-open .custom-scrollbar-container {
 @keyframes bounceChevron {
   0%, 100% { opacity: 0; transform: rotate(45deg) translate(-5px, -5px); }
   50% { opacity: 1; transform: rotate(45deg) translate(0, 0); }
-}
-
-.video-calendly-section {
-  padding: 40px 20px;
-  text-align: center;
-  display: none;
-}
-.video-calendly-section.active {
-  display: block;
-  animation: fadeInPrompt 1s forwards;
 }

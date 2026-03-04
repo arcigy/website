@@ -1924,6 +1924,7 @@ function initCustomScrollbar() {
 // --- Welcome Video & Calendly Modal Logic ---
 let ytPlayer;
 let ytProgressInterval;
+let calendlyUnlocked = false;
 
 // This function is required by YouTube API when it's ready
 function onYouTubeIframeAPIReady() {
@@ -1944,12 +1945,10 @@ function onYouTubeIframeAPIReady() {
 
 function onPlayerStateChange(event) {
     if (event.data == YT.PlayerState.PLAYING) {
-        // Start checking time
         if (!ytProgressInterval) {
             ytProgressInterval = setInterval(checkVideoProgress, 500);
         }
     } else {
-        // Stop checking if paused/ended
         if (ytProgressInterval) {
             clearInterval(ytProgressInterval);
             ytProgressInterval = null;
@@ -1964,36 +1963,40 @@ function checkVideoProgress() {
     const currentTime = ytPlayer.getCurrentTime();
     const timeLeft = duration - currentTime;
     
-    // Trigger scroll prompt 5 seconds before end, or if it ended
-    if (timeLeft <= 5 && duration > 0) {
+    // Trigger scroll prompt 8 seconds before end, or if it ended
+    if (timeLeft <= 8 && duration > 0) {
         showScrollPrompt();
     }
 }
 
 function showScrollPrompt() {
     const prompt = document.getElementById('videoScrollPrompt');
-    const calendly = document.getElementById('videoCalendlySection');
-    const contentBox = document.querySelector('.video-modal-content');
+    const slider = document.getElementById('videoModalSlider');
     
-    if (prompt && !prompt.classList.contains('active')) {
-        prompt.classList.add('active');
-    }
-    if (calendly && !calendly.classList.contains('active')) {
-        calendly.classList.add('active');
-    }
-    if (contentBox && !contentBox.classList.contains('scroll-unlocked')) {
-        contentBox.classList.add('scroll-unlocked');
+    if (!calendlyUnlocked) {
+        calendlyUnlocked = true;
+        
+        if (prompt && !prompt.classList.contains('active')) {
+            prompt.classList.add('active');
+        }
+        
+        if (slider) {
+            // Trigger the "tug" hint animation (stronger now)
+            slider.classList.add('hint-active');
+        }
     }
 }
 
 function resetScrollPrompt() {
+    calendlyUnlocked = false; // Reset the state, but scrolling is still always allowed
     const prompt = document.getElementById('videoScrollPrompt');
-    const calendly = document.getElementById('videoCalendlySection');
-    const contentBox = document.querySelector('.video-modal-content');
+    const slider = document.getElementById('videoModalSlider');
     
     if (prompt) prompt.classList.remove('active');
-    if (calendly) calendly.classList.remove('active');
-    if (contentBox) contentBox.classList.remove('scroll-unlocked');
+    if (slider) {
+        slider.classList.remove('hint-active');
+        slider.classList.remove('show-calendly');
+    }
 }
 
 function initVideoModal() {
@@ -2001,18 +2004,29 @@ function initVideoModal() {
     const modal = document.getElementById('videoModal');
     const overlay = document.getElementById('videoModalOverlay');
     const closeBtn = document.getElementById('closeVideoBtn');
-    const contentBox = document.querySelector('.video-modal-content');
+    const slider = document.getElementById('videoModalSlider');
+    const prompt = document.getElementById('videoScrollPrompt');
 
     if (!videoBtn || !modal) return;
+
+    function preventBackgroundScroll(e) {
+        if (modal.classList.contains('active')) {
+            // Prevent background scrolling if touching/scrolling outside the modal content
+            if (!e.target.closest('.video-modal-content')) {
+                e.preventDefault();
+            }
+        }
+    }
 
     function openModal() {
         modal.classList.add('active');
         document.body.classList.add('modal-open');
+        document.documentElement.classList.add('modal-open');
         
-        // Ensure scroll is at top
-        if (contentBox) contentBox.scrollTop = 0;
+        // Strict background scroll locking
+        window.addEventListener('wheel', preventBackgroundScroll, { passive: false });
+        window.addEventListener('touchmove', preventBackgroundScroll, { passive: false });
         
-        // Play video if ready
         if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
             ytPlayer.seekTo(0);
             ytPlayer.playVideo();
@@ -2023,6 +2037,10 @@ function initVideoModal() {
     function closeModal() {
         modal.classList.remove('active');
         document.body.classList.remove('modal-open');
+        document.documentElement.classList.remove('modal-open');
+        
+        window.removeEventListener('wheel', preventBackgroundScroll);
+        window.removeEventListener('touchmove', preventBackgroundScroll);
         
         if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
             ytPlayer.pauseVideo();
@@ -2046,6 +2064,47 @@ function initVideoModal() {
             closeModal();
         }
     });
+
+    // Slider Swipe & Scroll Logic
+    let startY = 0;
+    
+    if (slider) {
+        // Handle Mouse Scroll
+        slider.addEventListener('wheel', (e) => {
+            // Scroll is always allowed now, no !calendlyUnlocked guard
+            if (e.deltaY > 40) {
+                slider.classList.add('show-calendly');
+            } else if (e.deltaY < -40) {
+                slider.classList.remove('show-calendly');
+            }
+        });
+
+        // Handle Touch Swipe
+        slider.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+        });
+
+        slider.addEventListener('touchend', (e) => {
+            // Scroll is always allowed now
+            let endY = e.changedTouches[0].clientY;
+            let diff = startY - endY;
+
+            if (diff > 40) { // Swipe up
+                slider.classList.add('show-calendly');
+            } else if (diff < -40) { // Swipe down
+                slider.classList.remove('show-calendly');
+            }
+        });
+    }
+
+    // Allow clicking prompt to advance to calendly
+    if (prompt) {
+        prompt.addEventListener('click', () => {
+            if (slider) {
+                slider.classList.add('show-calendly');
+            }
+        });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', initVideoModal);

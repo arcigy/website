@@ -1012,28 +1012,38 @@
                     <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
             </button>
-            <div class="video-modal-content">
-                <div class="video-container">
-                    <div id="youtubePlayer"></div>
-                </div>
-                
-                <div id="videoScrollPrompt" class="video-scroll-prompt">
-                    <span style="font-size: 0.85em; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.7); display: block; margin-bottom: 8px;">Pokračujte pre rezerváciu</span>
-                    <div class="scroll-chevrons">
-                        <div class="scroll-chevron"></div>
-                        <div class="scroll-chevron"></div>
-                        <div class="scroll-chevron"></div>
-                    </div>
-                </div>
-
-                <div id="videoCalendlySection" class="video-calendly-section">
-                    <h2 style="font-family: var(--font-heading); font-size: 2rem; margin-bottom: 1rem; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Zarezervujte si AI Konzultáciu</h2>
-                    <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 2rem;">Premeňte vaše procesy a odomknite potenciál rastu s ArciGy.</p>
+            <div class="video-modal-content" id="videoModalContent">
+                <div class="video-modal-slider" id="videoModalSlider">
                     
-                    <!-- Calendly inline widget begin -->
-                    <div class="calendly-inline-widget" data-url="https://calendly.com/andrej-arcigy/ai-konzultacia?hide_gdpr_banner=1" style="min-width:320px;height:700px;"></div>
-                    <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
-                    <!-- Calendly inline widget end -->
+                    <!-- Slide 1: Video -->
+                    <div class="slider-slide video-slide">
+                        <div class="video-container">
+                            <div id="youtubePlayer"></div>
+                        </div>
+                        
+                        <div id="videoScrollPrompt" class="video-scroll-prompt">
+                            <span style="font-size: 0.85em; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.7); display: block; margin-bottom: 8px;">Potiahni a rezervuj</span>
+                            <div class="scroll-chevrons">
+                                <div class="scroll-chevron"></div>
+                                <div class="scroll-chevron"></div>
+                                <div class="scroll-chevron"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 2: Calendly -->
+                    <div class="slider-slide calendly-slide">
+                        <div id="videoCalendlySection" class="video-calendly-section">
+                            <h2 style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 0.5rem; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Zarezervujte si AI Konzultáciu</h2>
+                            <p style="color: var(--text-muted); font-size: 1rem; margin-bottom: 1rem;">Premeňte vaše procesy a odomknite rast.</p>
+                            
+                            <!-- Calendly inline widget begin -->
+                            <div class="calendly-inline-widget" data-url="https://calendly.com/andrej-arcigy/ai-konzultacia?hide_gdpr_banner=1" style="min-width:320px;height:100%;"></div>
+                            <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+                            <!-- Calendly inline widget end -->
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
