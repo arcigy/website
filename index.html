@@ -1018,23 +1018,26 @@
 
       <!-- Video Pane (First Fold) -->
       <div class="ukazka-video-pane">
-        <!-- Čierne pozadie -->
-        <div id="ukazka-bg"></div>
+        <!-- Pozadie s lietajúcimi svetielkami -->
+        <canvas id="ukazka-canvas-bg" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;"></canvas>
+        
+        <!-- Čierne pozadie (zatmenie) -->
+        <div id="ukazka-bg" style="z-index: 10;"></div>
         
         <!-- Logo animácia -->
-        <div id="ukazka-logo-container" aria-hidden="true">
+        <div id="ukazka-logo-container" aria-hidden="true" style="z-index: 20;">
             <img src="GRADIENT_LOGO ONLY.png" alt="ArciGy Logo">
             <img src="GRADIENT_TEXT ONLY.png" alt="ArciGy">
         </div>
         
         <!-- YouTube iFrame -->
-        <div id="ukazka-video-container" aria-label="Video prezentácia">
+        <div id="ukazka-video-container" aria-label="Video prezentácia" style="z-index: 5;">
           <div id="ukazka-player-wrapper"></div>
-          <div id="ukazka-video-shield" aria-hidden="true"></div>
+          <!-- Shield odstránený aby fungovala lišta -->
         </div>
         
         <!-- End-of-video overlay -->
-        <div id="ukazka-end-overlay" aria-hidden="true">
+        <div id="ukazka-end-overlay" aria-hidden="true" style="z-index: 30;">
           <div id="ukazka-scroll-hint">
             <span id="ukazka-scroll-text">Pokračuj nižšie</span>
             <div id="ukazka-arrow-container" aria-hidden="true">
@@ -1049,16 +1052,11 @@
       <!-- CONTENT SEKCIA (Scroll below video inside overlay) -->
       <section id="ukazka-content-section" aria-label="O našom podnikaní">
         
-        <!-- SVG Background Paths animácia -->
-        <div id="ukazka-bg-paths" aria-hidden="true">
-          <svg id="ukazka-paths-svg" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"></svg>
-        </div>
-
         <!-- BLOK 1 — Hero statement -->
         <div class="ukazka-block ukazka-block--text-left" data-ukazka-block="0">
           <div class="ukazka-block__text">
             <span class="ukazka-tag">AI AUTOMATION AGENCY</span>
-            <h2 class="ukazka-heading ukazka-swap-text">Tvoj biznis môže robiť viac — bez väčšieho tímu.</h2>
+            <h2 class="ukazka-heading">Tvoj biznis môže robiť viac — bez väčšieho tímu.</h2>
             <p class="ukazka-body">Žijeme v dobe, kedy umelá inteligencia nie je výhoda len pre korporácie. Je to nástroj, ktorý malé a stredné firmy môžu využiť práve teraz — ak vedia kde začať. My vieme.</p>
           </div>
           <div class="ukazka-block__image">
@@ -1079,7 +1077,7 @@
           </div>
           <div class="ukazka-block__text">
             <span class="ukazka-tag">AI AUDIT</span>
-            <h2 class="ukazka-heading ukazka-swap-text">AI Audit — röntgen tvojho podnikania.</h2>
+            <h2 class="ukazka-heading">AI Audit — röntgen tvojho podnikania.</h2>
             <p class="ukazka-body">Než nasadíme akúkoľvek automatizáciu, ideme hlboko. Analyzujeme každý proces, každý zbytočný krok, každú hodinu ktorú tvoj tím strávi manuálnou prácou. Výsledkom je konkrétny plán — kde AI ušetrí čas, peniaze a energiu. Nie teória. Akčný plán.</p>
           </div>
         </div>
@@ -1088,7 +1086,7 @@
         <div class="ukazka-block ukazka-block--text-left" data-ukazka-block="2">
           <div class="ukazka-block__text">
             <span class="ukazka-tag">NÁŠ PRÍSTUP</span>
-            <h2 class="ukazka-heading ukazka-swap-text">Nepredávame software. Riešime problémy.</h2>
+            <h2 class="ukazka-heading">Nepredávame software. Riešime problémy.</h2>
             <p class="ukazka-body">Každý klient je iný. Preto nezačíname s hotovým riešením — začíname s otázkami. Rozumieme tvojmu biznisu, tvojim ľuďom, tvojim cieľom. Až potom navrhujeme automatizácie, ktoré do teba skutočne zapadnú. Žiadne zbytočné nástroje. Len to čo funguje.</p>
           </div>
           <div class="ukazka-block__image">
@@ -1109,12 +1107,12 @@
           </div>
           <div class="ukazka-block__text">
             <span class="ukazka-tag">VÝSLEDKY</span>
-            <h2 class="ukazka-heading ukazka-swap-text">Hodiny späť. Chyby preč. Rast vpred.</h2>
+            <h2 class="ukazka-heading">Hodiny späť. Chyby preč. Rast vpred.</h2>
             <p class="ukazka-body">Firmy ktoré s nami prešli AI auditom objavili procesy, ktoré im každý týždeň brali desiatky hodín zbytočnej práce. Emailové workflow, reporty, onboarding, zákaznícka komunikácia — toto sú oblasti kde AI pracuje 24/7 a nikdy nezabudne.</p>
           </div>
         </div>
 
-        <!-- BLOK 5 — CTA & Calendly -->
+        <!-- Calendly s farbami webu -->
         <div class="ukazka-block ukazka-block--cta" data-ukazka-block="4">
           <div class="ukazka-cta-inner">
             <span class="ukazka-tag">ZAČNI DNES</span>
@@ -1122,10 +1120,9 @@
             <p class="ukazka-body ukazka-body--centered">Premeňte vaše procesy a odomknite rast.</p>
             
             <div style="width: 100%; margin-top: 2rem;">
-                <!-- Calendly inline widget begin -->
-                <div class="calendly-inline-widget" data-url="https://calendly.com/andrej-arcigy/ai-konzultacia?hide_gdpr_banner=1" style="min-width:320px;height:750px;"></div>
+                <!-- Calendly s farbami v URL -->
+                <div class="calendly-inline-widget" data-url="https://calendly.com/andrej-arcigy/ai-konzultacia?hide_gdpr_banner=1&background_color=050812&text_color=e6edf3&primary_color=6365e8" style="min-width:320px;height:750px;"></div>
                 <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
-                <!-- Calendly inline widget end -->
             </div>
           </div>
         </div>
