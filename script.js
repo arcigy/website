@@ -1928,6 +1928,8 @@ let calendlyUnlocked = false;
 
 // This function is required by YouTube API when it's ready
 function onYouTubeIframeAPIReady() {
+    if (!document.getElementById('youtubePlayer')) return;
+    
     ytPlayer = new YT.Player('youtubePlayer', {
         height: '100%',
         width: '100%',
