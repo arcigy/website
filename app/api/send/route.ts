@@ -5,106 +5,88 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { 
-      name, email, phone, website, teamSize, processes, tool, 
-      acquisition, salesProcess, marketing, salesChannel, crm, 
-      painPoints, automateGoals, support, expectations, priorities 
-    } = body;
+    const formData = body;
+    const name = formData.name || 'Neznáme meno';
+    const email = formData.email || '';
+
+    // Dynamicky vygenerujeme riadky pre tabuľku a markdown
+    let tableRows = '';
+    let markdownContent = '';
+
+    // Mapa pre ľudskejšie názvy polí
+    const fieldLabels: Record<string, string> = {
+      name: 'Meno a priezvisko',
+      email: 'Email',
+      phone: 'Telefón',
+      company: 'Firma',
+      industry: 'Odvetvie',
+      teamSize: 'Veľkosť tímu',
+      whatYouSell: 'Čo firma predáva',
+      typicalCustomer: 'Typický zákazník',
+      customerSource: 'Zdroj zákazníkov',
+      founderTasks: 'Hlavné úlohy zakladateľa',
+      magicWand: 'Čarovný prútik (zrušenie úlohy)',
+      marketingChallenge: 'Marketingová výzva',
+      salesTeam: 'Obchodný tím',
+      salesChallenge: 'Obchodná výzva',
+      deliveryBottleneck: 'Úzke hrdlo v operatíve',
+      recurringProblem: 'Opakujúci sa problém',
+      supportHeadaches: 'Bolesti hlavy v podpore',
+      aiExperience: 'Skúsenosti s AI',
+      aiToolsUsed: 'Použité AI nástroje',
+      successDefinition: 'Definícia úspechu',
+      specificFocus: 'Špecifické zameranie',
+      website: 'Webstránka / LinkedIn',
+      processes: 'Vykonávané procesy',
+      tool: 'Kľúčový nástroj',
+      acquisition: 'Akvizícia klientov',
+      salesProcess: 'Obchodný proces',
+      marketing: 'Marketingový tím',
+      salesChannel: 'Sales kanál',
+      crm: 'CRM systém',
+      painPoints: 'Administratívne pain points',
+      automateGoals: 'Ciele automatizácie',
+      support: 'Riešenie podpory',
+      expectations: 'Očakávania od AI',
+      priorities: 'Priority (12 mesiacov)',
+    };
+
+    Object.entries(formData).forEach(([key, value]) => {
+      // Preskočíme technické polia alebo prázdne hodnoty
+      if (['isSubmitting', 'isSuccess'].includes(key)) return;
+      if (!value || (Array.isArray(value) && value.length === 0)) return;
+
+      const label = fieldLabels[key] || key;
+      const displayValue = Array.isArray(value) ? value.join(', ') : value;
+
+      tableRows += `
+        <tr style="border-bottom: 1px solid #eee;">
+          <td style="padding: 12px 0; font-weight: bold; width: 35%; vertical-align: top; color: #666;">${label}</td>
+          <td style="padding: 12px 0; vertical-align: top; color: #111;">${displayValue}</td>
+        </tr>
+      `;
+
+      markdownContent += `- **${label}:** ${displayValue}\n`;
+    });
 
     const markdownVersion = `
-# AI AUDIT DOPYT: ${name}
+# NOVÝ DOPYT NA AI AUDIT (${name})
 
-## 01. ZÁKLADY
-- **Meno a priezvisko:** ${name}
-- **Email:** ${email}
-- **Telefón:** ${phone}
-- **Webstránka / LinkedIn firmy:** ${website}
-- **Veľkosť spoločnosti/tímu:** ${teamSize}
-
-## 02. AKTUÁLNE FUNGOVANIE
-- **Vykonávané procesy:** ${processes.join(', ')}
-- **Najpoužívanejší nástroj:** ${tool}
-
-## 03. OBCHOD / SALES
-- **Kde získavate potenciálnych klientov?:** ${acquisition}
-- **Máte nastavený proces pre sledovanie obchodných príležitostí?:** ${salesProcess}
-
-## 04. MARKETING
-- **Máte dedikovaný marketingový tím?:** ${marketing}
-
-## 05. PREDAJ
-- **Aký je váš primárny kanál na získavanie zákazníkov?:** ${salesChannel}
-- **Používate CRM? Ak áno, aké?:** ${crm}
-
-## 06. ADMINISTRATÍVA / OPERATÍVA
-- **Ktoré administratívne úlohy vám zaberajú najviac času?:** ${painPoints}
-- **Aké rutinné činnosti by ste radi automatizovali?:** ${automateGoals}
-
-## 07. PODPORA
-- **Ako sa riešia požiadavky zákazníkov?:** ${support}
-
-## 08. OČAKÁVANIA
-- **Čo očakávate od implementácie AI?:** ${expectations}
-- **Tri najdôležitejšie priority (12 mesiacov):** ${priorities}
+${markdownContent}
     `.trim();
 
     // 1. INTERNÝ EMAIL (Pre tím Arcigy - hello@)
     await resend.emails.send({
       from: 'Arcigy Audit System <audit@arcigy.group>',
       to: ['hello@arcigy.group'],
-      subject: `[ARCIGY-AUDIT-FORM] 🚨 NOVÝ DOPYT: ${name} (${teamSize})`,
+      subject: `[ARCIGY-AUDIT-FORM] 🚨 NOVÝ DOPYT: ${name}`,
       html: `
-        <div style="font-family: sans-serif; background: #FFFFFF; color: #111111; padding: 40px; line-height: 1.6;">
+        <div style="font-family: sans-serif; background: #FFFFFF; color: #111111; padding: 40px; line-height: 1.6; max-width: 800px; margin: 0 auto;">
           <h1 style="border-bottom: 2px solid #000000; padding-bottom: 10px; font-size: 22px;">NOVÝ DOPYT NA AI AUDIT</h1>
           
-          <div style="margin-top: 30px;">
-            <h2 style="font-size: 16px; text-transform: uppercase; border-bottom: 1px solid #EEE; padding-bottom: 5px;">01. Základné údaje</h2>
-            <p><strong>Meno a priezvisko:</strong><br/>${name}</p>
-            <p><strong>Váš email:</strong><br/>${email}</p>
-            <p><strong>Váš telefón:</strong><br/>${phone}</p>
-            <p><strong>Webstránka / LinkedIn firmy:</strong><br/>${website}</p>
-            <p><strong>Aká je veľkosť vašej spoločnosti/tímu?:</strong><br/>${teamSize}</p>
-          </div>
-
-          <div style="margin-top: 30px;">
-            <h2 style="font-size: 16px; text-transform: uppercase; border-bottom: 1px solid #EEE; padding-bottom: 5px;">02. Aktuálne fungovanie</h2>
-            <p><strong>Ktoré z týchto procesov v súčasnosti vykonávate?:</strong><br/>${processes.join(', ')}</p>
-            <p><strong>Ktorý nástroj používate vo firme najviac?:</strong><br/>${tool}</p>
-          </div>
-
-          <div style="margin-top: 30px;">
-            <h2 style="font-size: 16px; text-transform: uppercase; border-bottom: 1px solid #EEE; padding-bottom: 5px;">03. Obchod / Sales</h2>
-            <p><strong>Kde získavate potenciálnych klientov?:</strong><br/>${acquisition}</p>
-            <p><strong>Máte nastavený proces pre sledovanie obchodných príležitostí?:</strong><br/>${salesProcess}</p>
-          </div>
-
-          <div style="margin-top: 30px;">
-            <h2 style="font-size: 16px; text-transform: uppercase; border-bottom: 1px solid #EEE; padding-bottom: 5px;">04. Marketing</h2>
-            <p><strong>Máte dedikovaný marketingový tím?:</strong><br/>${marketing}</p>
-          </div>
-
-          <div style="margin-top: 30px;">
-            <h2 style="font-size: 16px; text-transform: uppercase; border-bottom: 1px solid #EEE; padding-bottom: 5px;">05. Predaj</h2>
-            <p><strong>Aký je váš primárny kanál na získavanie zákazníkov?:</strong><br/>${salesChannel}</p>
-            <p><strong>Používate CRM? Ak áno, aké?:</strong><br/>${crm}</p>
-          </div>
-
-          <div style="margin-top: 30px;">
-            <h2 style="font-size: 16px; text-transform: uppercase; border-bottom: 1px solid #EEE; padding-bottom: 5px;">06. Administratíva / Operatíva</h2>
-            <p><strong>Ktoré administratívne úlohy vám zaberajú najviac času?:</strong><br/>${painPoints}</p>
-            <p><strong>Aké rutinné činnosti by ste radi automatizovali?:</strong><br/>${automateGoals}</p>
-          </div>
-
-          <div style="margin-top: 30px;">
-            <h2 style="font-size: 16px; text-transform: uppercase; border-bottom: 1px solid #EEE; padding-bottom: 5px;">07. Podpora</h2>
-            <p><strong>Ako sa riešia požiadavky zákazníkov?:</strong><br/>${support}</p>
-          </div>
-
-          <div style="margin-top: 30px;">
-            <h2 style="font-size: 16px; text-transform: uppercase; border-bottom: 1px solid #EEE; padding-bottom: 5px;">08. Očakávania</h2>
-            <p><strong>Čo očakávate od implementácie AI?:</strong><br/>${expectations}</p>
-            <p><strong>Ktoré sú vaše tri najdôležitejšie priority pre nasledujúcich 12 mesiacov?:</strong><br/>${priorities}</p>
-          </div>
+          <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            ${tableRows}
+          </table>
 
           <div style="margin-top: 50px; background: #F9F9F9; padding: 25px; border: 1px solid #DDD;">
             <h3 style="font-size: 13px; margin-top: 0; color: #666;">MARKDOWN KÓPIA (pre CRM/Notion):</h3>
@@ -123,7 +105,7 @@ export async function POST(request: Request) {
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #FFFFFF; color: #111111; padding: 40px; border: 1px solid #EEE; border-radius: 8px;">
           <h2 style="color: #7C3AED; font-size: 24px; margin-bottom: 20px;">Dobrý deň, ${name}.</h2>
           <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-            Ďakujeme za váš záujem o AI Audit pre firmu <strong>${website || 'vašu spoločnosť'}</strong>. Vaše odpovede sme úspešne prijali.
+            Ďakujeme za váš záujem o AI Audit pre spoločnosť <strong>${formData.company || formData.website || 'vašu firmu'}</strong>. Vaše odpovede sme úspešne prijali.
           </p>
           <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
             Práve teraz analyzujeme vaše odpovede. Náš tím sa vám ozve čoskoro s návrhom termínu pre náš úvodný hovor, kde prejdeme všetky detaily a možnosti automatizácie.

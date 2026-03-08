@@ -161,7 +161,7 @@ const steps: Step[] = [
   }
 ];
 
-export default function Dotaznik() {
+export default function Formular() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -170,7 +170,6 @@ export default function Dotaznik() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line
     setMounted(true);
   }, []);
   
@@ -238,11 +237,28 @@ export default function Dotaznik() {
     if (!validateCurrentStep()) return;
     
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
     
-    console.log("Data:", formData);
-    setIsSubmitting(false);
-    setIsSuccess(true);
+    try {
+      const response = await fetch('/api/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setIsSuccess(true);
+      } else {
+        console.error('Submission failed');
+        alert('Ospravedlňujeme sa, ale niečo sa pokazilo. Skúste to prosím znova o chvíľu.');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Chyba pripojenia. Skúste to prosím znova.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
