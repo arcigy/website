@@ -19,6 +19,25 @@ const PROCESSES = [
 export default function AuditForm() {
   const sectionRef = useRef<HTMLElement>(null);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    website: '',
+    teamSize: '',
+    processes: [] as string[],
+    tool: '',
+    acquisition: '',
+    salesProcess: '',
+    marketing: '',
+    salesChannel: '',
+    crm: '',
+    painPoints: '',
+    automateGoals: '',
+    support: '',
+    expectations: '',
+    priorities: '',
+  });
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -37,19 +56,45 @@ export default function AuditForm() {
     return () => ctx.revert();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleProcessChange = (proc: string) => {
+    setFormData(prev => ({
+      ...prev,
+      processes: prev.processes.includes(proc)
+        ? prev.processes.filter(p => p !== proc)
+        : [...prev.processes, proc]
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('loading');
-    setTimeout(() => setStatus('success'), 1500);
+
+    try {
+      const resp = await fetch('/api/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      if (resp.ok) {
+        setStatus('success');
+      } else {
+        throw new Error('Failed to send');
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus('idle');
+      alert('Chyba pri odosielaní. Skúste to prosím znova.');
+    }
   };
 
   if (status === 'success') {
     return (
-      <section ref={sectionRef} id="audit-form" className="py-24 px-6 min-h-[60vh] flex items-center justify-center">
+      <section ref={sectionRef} id="audit-form" className="py-24 px-6 min-h-[60vh] flex items-center justify-center" style={{ background: 'rgba(5, 0, 8, 1)' }}>
         <div className="text-center">
           <h2 className="text-6xl font-display text-electric mb-6 animate-pulse">ODOSLANÉ.</h2>
           <p className="text-muted text-xl max-w-md mx-auto">
-            Vaša prihláška na AI Audit bola prijatá. Ozveme sa vám do 24 hodín s návrhom termínu úvodného hovoru.
+            Vaša prihláška na AI Audit bola prijatá. Ozveme sa vám čoskoro s návrhom termínu úvodného hovoru.
           </p>
         </div>
       </section>
@@ -61,7 +106,7 @@ export default function AuditForm() {
       ref={sectionRef}
       id="audit-form"
       className="relative py-24 px-6 overflow-hidden border-t border-white/10"
-      style={{ background: 'rgba(13, 0, 16, 0.98)' }}
+      style={{ background: 'rgba(5, 0, 8, 1)' }}
     >
       {/* Background Glows */}
       <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-purple-600/5 rounded-full blur-[120px] pointer-events-none" />
@@ -93,19 +138,19 @@ export default function AuditForm() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-2">
                 <label className="text-xs font-mono uppercase text-dim tracking-widest">Meno a priezvisko</label>
-                <input required type="text" placeholder="Jozef Mrkva" className="audit-input" />
+                <input required type="text" placeholder="Jozef Mrkva" className="audit-input" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-mono uppercase text-dim tracking-widest">Váš email</label>
-                <input required type="email" placeholder="jozef@firma.sk" className="audit-input" />
+                <input required type="email" placeholder="jozef@firma.sk" className="audit-input" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-mono uppercase text-dim tracking-widest">Váš telefón</label>
-                <input required type="tel" placeholder="+421 ..." className="audit-input" />
+                <input required type="tel" placeholder="+421 ..." className="audit-input" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-mono uppercase text-dim tracking-widest">Webstránka / LinkedIn firmy</label>
-                <input required type="url" placeholder="https://..." className="audit-input" />
+                <input required type="url" placeholder="https://..." className="audit-input" value={formData.website} onChange={(e) => setFormData({...formData, website: e.target.value})} />
               </div>
             </div>
 
@@ -114,7 +159,7 @@ export default function AuditForm() {
               <div className="flex flex-wrap gap-3">
                 {TEAM_SIZES.map(size => (
                   <label key={size} className="cursor-pointer group">
-                    <input type="radio" name="team_size" value={size} className="hidden peer" />
+                    <input type="radio" name="team_size" value={size} className="hidden peer" checked={formData.teamSize === size} onChange={() => setFormData({...formData, teamSize: size})} />
                     <div className="px-6 py-2 border border-white/10 bg-white/5 peer-checked:border-electric peer-checked:bg-electric/10 transition-all duration-300 group-hover:bg-white/10 uppercase font-mono text-xs">
                       {size}
                     </div>
@@ -136,7 +181,7 @@ export default function AuditForm() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {PROCESSES.map(proc => (
                   <label key={proc} className="flex items-center gap-3 cursor-pointer group">
-                    <input type="checkbox" name="processes" value={proc} className="audit-checkbox" />
+                    <input type="checkbox" name="processes" value={proc} className="audit-checkbox" checked={formData.processes.includes(proc)} onChange={() => handleProcessChange(proc)} />
                     <span className="text-dim group-hover:text-white transition-colors text-sm">{proc}</span>
                   </label>
                 ))}
@@ -144,8 +189,8 @@ export default function AuditForm() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-mono uppercase text-dim tracking-widest uppercase">Ktorý nástroj používate vo firme najviac?</label>
-              <input type="text" placeholder="napr. Slack, Excel, SAP, Hubspot..." className="audit-input" />
+              <label className="text-xs font-mono uppercase text-dim tracking-widest">Ktorý nástroj používate vo firme najviac?</label>
+              <input type="text" placeholder="napr. Slack, Excel, SAP, Hubspot..." className="audit-input" value={formData.tool} onChange={(e) => setFormData({...formData, tool: e.target.value})} />
             </div>
           </div>
 
@@ -157,11 +202,11 @@ export default function AuditForm() {
             </div>
             <div className="space-y-2">
               <label className="text-xs font-mono uppercase text-dim tracking-widest">Kde získavate potenciálnych klientov?</label>
-              <textarea placeholder="Popíšte vaše akvizičné kanály..." className="audit-textarea" rows={3} />
+              <textarea placeholder="Popíšte vaše akvizičné kanály..." className="audit-textarea" rows={3} value={formData.acquisition} onChange={(e) => setFormData({...formData, acquisition: e.target.value})} />
             </div>
             <div className="space-y-2">
               <label className="text-xs font-mono uppercase text-dim tracking-widest">Máte nastavený proces pre sledovanie obchodných príležitostí?</label>
-              <textarea placeholder="Áno / Nie / Ako to funguje?" className="audit-textarea" rows={2} />
+              <textarea placeholder="Áno / Nie / Ako to funguje?" className="audit-textarea" rows={2} value={formData.salesProcess} onChange={(e) => setFormData({...formData, salesProcess: e.target.value})} />
             </div>
           </div>
 
@@ -173,7 +218,7 @@ export default function AuditForm() {
             </div>
             <div className="space-y-2">
               <label className="text-xs font-mono uppercase text-dim tracking-widest">Máte dedikovaný marketingový tím?</label>
-              <input type="text" placeholder="Interný tím / Externá agentúra / Freelancer" className="audit-input" />
+              <input type="text" placeholder="Interný tím / Externá agentúra / Freelancer" className="audit-input" value={formData.marketing} onChange={(e) => setFormData({...formData, marketing: e.target.value})} />
             </div>
           </div>
 
@@ -185,11 +230,11 @@ export default function AuditForm() {
             </div>
             <div className="space-y-2">
               <label className="text-xs font-mono uppercase text-dim tracking-widest">Aký je váš primárny kanál na získavanie zákazníkov?</label>
-              <input type="text" placeholder="Ads / Referencie / Cold calling..." className="audit-input" />
+              <input type="text" placeholder="Ads / Referencie / Cold calling..." className="audit-input" value={formData.salesChannel} onChange={(e) => setFormData({...formData, salesChannel: e.target.value})} />
             </div>
             <div className="space-y-2">
               <label className="text-xs font-mono uppercase text-dim tracking-widest">Používate CRM? Ak áno, aké?</label>
-              <input type="text" placeholder="Pipedrive, Salesforce, vlastné riešenie..." className="audit-input" />
+              <input type="text" placeholder="Pipedrive, Salesforce, vlastné riešenie..." className="audit-input" value={formData.crm} onChange={(e) => setFormData({...formData, crm: e.target.value})} />
             </div>
           </div>
 
@@ -201,11 +246,11 @@ export default function AuditForm() {
             </div>
             <div className="space-y-2">
               <label className="text-xs font-mono uppercase text-dim tracking-widest">Ktoré administratívne úlohy vám zaberajú najviac času?</label>
-              <textarea placeholder="Fakturácia, nahadzovanie dát, reporting..." className="audit-textarea" rows={3} />
+              <textarea placeholder="Fakturácia, nahadzovanie dát, reporting..." className="audit-textarea" rows={3} value={formData.painPoints} onChange={(e) => setFormData({...formData, painPoints: e.target.value})} />
             </div>
             <div className="space-y-2">
               <label className="text-xs font-mono uppercase text-dim tracking-widest">Aké rutinné činnosti by ste radi automatizovali?</label>
-              <textarea placeholder="Napr. spracovanie objednávok, extrakcia dát z dokumentov..." className="audit-textarea" rows={3} />
+              <textarea placeholder="Napr. spracovanie objednávok, extrakcia dát z dokumentov..." className="audit-textarea" rows={3} value={formData.automateGoals} onChange={(e) => setFormData({...formData, automateGoals: e.target.value})} />
             </div>
           </div>
 
@@ -217,7 +262,7 @@ export default function AuditForm() {
             </div>
             <div className="space-y-2">
               <label className="text-xs font-mono uppercase text-dim tracking-widest">Ako sa riešia požiadavky zákazníkov?</label>
-              <textarea placeholder="Emailom, telefonicky, ticketing system..." className="audit-textarea" rows={3} />
+              <textarea placeholder="Emailom, telefonicky, ticketing system..." className="audit-textarea" rows={3} value={formData.support} onChange={(e) => setFormData({...formData, support: e.target.value})} />
             </div>
           </div>
 
@@ -228,22 +273,25 @@ export default function AuditForm() {
               <h3 className="text-2xl font-bold uppercase tracking-wider text-white">Očakávania</h3>
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-mono uppercase text-dim tracking-widest uppercase">Čo očakávate od implementácie AI?</label>
-              <textarea placeholder="Zníženie nákladov, vyššia rýchlosť, lepšia kvalita..." className="audit-textarea" rows={3} />
+              <label className="text-xs font-mono uppercase text-dim tracking-widest">Čo očakávate od implementácie AI?</label>
+              <textarea placeholder="Zníženie nákladov, vyššia rýchlosť, lepšia kvalita..." className="audit-textarea" rows={3} value={formData.expectations} onChange={(e) => setFormData({...formData, expectations: e.target.value})} />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-mono uppercase text-dim tracking-widest uppercase">Ktoré sú vaše tri najdôležitejšie priority pre nasledujúcich 12 mesiacov?</label>
-              <textarea placeholder="1. ... 2. ... 3. ..." className="audit-textarea" rows={4} />
+              <label className="text-xs font-mono uppercase text-dim tracking-widest">Ktoré sú vaše tri najdôležitejšie priority pre nasledujúcich 12 mesiacov?</label>
+              <textarea placeholder="1. ... 2. ... 3. ..." className="audit-textarea" rows={4} value={formData.priorities} onChange={(e) => setFormData({...formData, priorities: e.target.value})} />
             </div>
           </div>
 
           <button
             type="submit"
-            className="w-full py-6 bg-electric hover:bg-violet-600 text-white font-bold uppercase tracking-[0.2em] transition-all duration-500 hover:shadow-[0_0_40px_rgba(168,85,247,0.4)] group"
+            disabled={status === 'loading'}
+            className="w-full py-6 bg-electric hover:bg-violet-600 text-white font-bold uppercase tracking-[0.2em] transition-all duration-500 hover:shadow-[0_0_40px_rgba(168,85,247,0.4)] group disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span className="flex items-center justify-center gap-3">
-              Odoslať dopyt na Audit
-              <span className="group-hover:translate-x-2 transition-transform duration-300">→</span>
+              {status === 'loading' ? 'Odosielam...' : 'Odoslať dopyt na Audit'}
+              <span className={`${status === 'loading' ? 'animate-spin' : 'group-hover:translate-x-2'} transition-transform duration-300`}>
+                {status === 'loading' ? '◌' : '→'}
+              </span>
             </span>
           </button>
         </form>
