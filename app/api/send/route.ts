@@ -49,9 +49,9 @@ export async function POST(request: Request) {
     `.trim();
 
     const data = await resend.emails.send({
-      from: 'Arcigy Audit <audit@arcigy.group>',
+      from: 'Arcigy Audit System <audit@arcigy.group>',
       to: ['hello@arcigy.group'],
-      subject: `🚨 NOVÝ DOPYT: ${name} (${teamSize})`,
+      subject: `[ARCIGY-AUDIT-FORM] 🚨 NOVÝ DOPYT: ${name} (${teamSize})`,
       html: `
         <div style="font-family: sans-serif; background: #FFFFFF; color: #111111; padding: 40px; line-height: 1.6;">
           <h1 style="border-bottom: 2px solid #000000; padding-bottom: 10px; font-size: 22px;">NOVÝ DOPYT NA AI AUDIT</h1>
