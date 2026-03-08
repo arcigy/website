@@ -50,7 +50,7 @@ export async function POST(request: Request) {
 
     const data = await resend.emails.send({
       from: 'Arcigy Audit <onboarding@resend.dev>',
-      to: ['automatizaciebackhand@gmail.com'],
+      to: ['hello@arcigy.group'],
       subject: `🚨 NOVÝ DOPYT: ${name} (${teamSize})`,
       html: `
         <div style="font-family: sans-serif; background: #FFFFFF; color: #111111; padding: 40px; line-height: 1.6;">
