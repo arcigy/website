@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     `.trim();
 
     const data = await resend.emails.send({
-      from: 'Arcigy Audit System <audit@arcigy.group>',
+      from: 'Arcigy Audit System <hello@arcigy.group>',
       to: ['hello@arcigy.group'],
       subject: `[ARCIGY-AUDIT-FORM] 🚨 NOVÝ DOPYT: ${name} (${teamSize})`,
       html: `
