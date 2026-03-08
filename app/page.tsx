@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import Nav from './components/Nav';
 import Hero from './components/Hero';
@@ -29,7 +30,9 @@ export default function Home() {
       <ShaderBackground />
       <CustomCursor />
       <FloatingScrollbar />
-      <Nav />
+      <Suspense fallback={null}>
+        <Nav />
+      </Suspense>
       <main>
         {/* Sekcia 1 */}
         <Hero />
