@@ -8,21 +8,17 @@ declare global {
   var prisma: undefined | ReturnType<typeof prismaClientSingleton>
 }
 
+// Lazy initialization for serverless / edge compatibility
 export function getPrisma(): PrismaClient {
-  // Check if we are on server-side
   if (typeof window !== 'undefined') {
-    throw new Error('Prisma cannot be used on client side');
+    throw new Error('Prisma can only be used on the server side.');
   }
 
-  if (process.env.NODE_ENV === 'production') {
-    if (!globalThis.prisma) {
-      globalThis.prisma = prismaClientSingleton()
-    }
-    return globalThis.prisma
+  const prisma = globalThis.prisma ?? prismaClientSingleton()
+  
+  if (process.env.NODE_ENV !== 'production') {
+    globalThis.prisma = prisma
   }
-
-  if (!globalThis.prisma) {
-    globalThis.prisma = prismaClientSingleton()
-  }
-  return globalThis.prisma
+  
+  return prisma
 }
