@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import prisma from '@/lib/prisma';
+import { getPrisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,6 +14,7 @@ export async function POST(request: Request) {
 
     // 1. ULOŽENIE DO DATABÁZY (Postgres via Prisma)
     try {
+      const prisma = getPrisma();
       await prisma.auditSubmission.create({
         data: {
           name: formData.name || '',

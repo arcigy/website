@@ -8,8 +8,21 @@ declare global {
   var prisma: undefined | ReturnType<typeof prismaClientSingleton>
 }
 
-const prisma = globalThis.prisma ?? prismaClientSingleton()
+export function getPrisma(): PrismaClient {
+  // Check if we are on server-side
+  if (typeof window !== 'undefined') {
+    throw new Error('Prisma cannot be used on client side');
+  }
 
-export default prisma
+  if (process.env.NODE_ENV === 'production') {
+    if (!globalThis.prisma) {
+      globalThis.prisma = prismaClientSingleton()
+    }
+    return globalThis.prisma
+  }
 
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma
+  if (!globalThis.prisma) {
+    globalThis.prisma = prismaClientSingleton()
+  }
+  return globalThis.prisma
+}
