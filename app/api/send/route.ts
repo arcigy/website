@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import prisma from '@/lib/prisma';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -8,6 +9,39 @@ export async function POST(request: Request) {
     const formData = body;
     const name = formData.name || 'Neznáme meno';
     const email = formData.email || '';
+
+    // 1. ULOŽENIE DO DATABÁZY (Postgres via Prisma)
+    try {
+      await prisma.auditSubmission.create({
+        data: {
+          name: formData.name || '',
+          email: formData.email || '',
+          phone: formData.phone || '',
+          company: formData.company || '',
+          industry: formData.industry || '',
+          teamSize: formData.teamSize || '',
+          whatYouSell: formData.whatYouSell || null,
+          typicalCustomer: formData.typicalCustomer || null,
+          customerSource: formData.customerSource || null,
+          founderTasks: formData.founderTasks || null,
+          magicWand: formData.magicWand || null,
+          marketingChallenge: formData.marketingChallenge || null,
+          salesTeam: formData.salesTeam || null,
+          salesChallenge: formData.salesChallenge || null,
+          deliveryBottleneck: formData.deliveryBottleneck || null,
+          recurringProblem: formData.recurringProblem || null,
+          supportHeadaches: formData.supportHeadaches || null,
+          aiExperience: formData.aiExperience || null,
+          aiToolsUsed: formData.aiToolsUsed || null,
+          successDefinition: formData.successDefinition || null,
+          specificFocus: formData.specificFocus || null,
+        }
+      });
+      console.log('Submission saved to database successfully');
+    } catch (dbError) {
+      console.error('Database save error:', dbError);
+      // Pokračujeme ďalej, aj keby DB zlyhala, aby aspoň email odišiel
+    }
 
     // Mapa pre CELÉ znenie otázok (presne z formular/page.tsx)
     const fieldLabels: Record<string, string> = {

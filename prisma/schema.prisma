@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model AuditSubmission {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  
+  // Základné údaje
+  name      String
+  email     String
+  phone     String
+  company   String
+  industry  String
+  teamSize  String
+  
+  // Detaily o biznise
+  whatYouSell      String?
+  typicalCustomer  String?
+  customerSource   String?
+  
+  // Čas a úlohy
+  founderTasks     String?
+  magicWand        String?
+  
+  // Marketing a Predaj
+  marketingChallenge String?
+  salesTeam          String?
+  salesChallenge     String?
+  
+  // Operatíva a Podpora
+  deliveryBottleneck String?
+  recurringProblem   String?
+  supportHeadaches   String?
+  
+  // AI Očakávania
+  aiExperience      String?
+  aiToolsUsed       String?
+  successDefinition String?
+  specificFocus      String?
+
+  @@index([email])
+  @@index([createdAt])
+}
