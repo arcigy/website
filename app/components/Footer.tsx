@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
   return (
@@ -32,17 +33,19 @@ export default function Footer() {
           }}
         >
           {/* Logo + tagline */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-            <div
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: '2rem',
-                letterSpacing: '0.04em',
-                color: 'var(--white)',
-              }}
-            >
-              ARC<span style={{ color: 'var(--electric)' }}>I</span>GY
-            </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <Image 
+              src="/logo.png" 
+              alt="ARCIGY" 
+              width={140}
+              height={32}
+              style={{ 
+                height: '32px', 
+                width: 'auto',
+                filter: 'brightness(1.1)',
+                display: 'block'
+              }} 
+            />
             <p
               style={{
                 fontFamily: 'var(--font-mono)',

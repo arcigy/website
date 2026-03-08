@@ -6,6 +6,8 @@ import { useSearchParams } from 'next/navigation';
 import VideoModal from './VideoModal';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import Image from 'next/image';
+
 export default function Nav() {
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [isDemoActive, setIsDemoActive] = useState(false);
@@ -73,17 +75,22 @@ export default function Nav() {
         borderRadius: '100px',
       }}
     >
-      <Link href="/" className="nav-logo" style={{ textDecoration: 'none' }}>
-        <span
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '1.25rem',
-            letterSpacing: '0.04em',
-            color: 'var(--white)',
-          }}
-        >
-          ARC<span style={{ color: 'var(--electric)' }}>I</span>GY
-        </span>
+      <Link href="/" className="nav-logo" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+        <Image 
+          src="/logo.png" 
+          alt="ARCIGY" 
+          width={120}
+          height={28}
+          priority
+          style={{ 
+            height: '28px', 
+            width: 'auto',
+            filter: 'brightness(1.1)',
+            transition: 'transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)'
+          }} 
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+        />
       </Link>
 
       <div style={{ display: 'flex', gap: '0.5rem' }}>
