@@ -37,7 +37,7 @@ export default function Footer() {
             <Image 
               src="/arcigy-logo-official.png" 
               alt="ARCIGY" 
-              width={140}
+              width={48}
               height={32}
               style={{ 
                 height: '32px', 
