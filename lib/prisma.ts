@@ -6,9 +6,7 @@ const prismaClientSingleton = () => {
   if (!url) {
     // Kvoli Next.js buildu na Railway, kde tato premenna moze chybat
     return new PrismaClient({
-      datasources: {
-        db: { url: "postgresql://dummy:dummy@localhost:5432/dummy" }
-      }
+      datasourceUrl: "postgresql://dummy:dummy@localhost:5432/dummy"
     })
   }
   
