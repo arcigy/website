@@ -9,50 +9,35 @@ export async function POST(request: Request) {
     const name = formData.name || 'Neznáme meno';
     const email = formData.email || '';
 
-    // Dynamicky vygenerujeme riadky pre tabuľku a markdown
+    // Mapa pre CELÉ znenie otázok (presne z formular/page.tsx)
+    const fieldLabels: Record<string, string> = {
+      name: 'Meno a priezvisko',
+      email: 'Pracovný e-mail',
+      phone: 'Telefónne číslo',
+      company: 'Názov firmy',
+      industry: 'Odvetvie',
+      teamSize: 'Koľko ľudí pracuje vo firme?',
+      whatYouSell: 'Jednou vetou, čo vaša firma predáva?',
+      typicalCustomer: 'Kto je váš typický zákazník?',
+      customerSource: 'Ako vás nájde väčšina zákazníkov?',
+      founderTasks: 'Aké sú 3 hlavné úlohy, ktoré vám každý týždeň zaberajú najviac času?',
+      magicWand: 'Keby ste mali čarovný prútik a získať späť 10 hodín týždenne, ktorú úlohu by ste zrušili prvú?',
+      marketingChallenge: 'Akej najväčšej prekážke čelíte pri získavaní leadov?',
+      salesTeam: 'Ako máte riešený obchodný tím?',
+      salesChallenge: 'Aká je najväčšia výzva pri uzatváraní obchodov?',
+      deliveryBottleneck: 'Čo je časovo najnáročnejšia časť procesu po tom, ako zákazník povie ÁNO?',
+      recurringProblem: 'Je vo vašej operatíve niečo, čo sa neustále kazí?',
+      supportHeadaches: 'Čo vám pri správe klientov spôsobuje najväčšie bolesti hlavy?',
+      aiExperience: 'Skúšali ste už nejaké AI nástroje?',
+      aiToolsUsed: 'Aké nástroje ste skúšali a aká bola skúsenosť?',
+      successDefinition: 'Ak nájdeme pri audite pre vás to pravé, ako vyzerá úspech?',
+      specificFocus: 'Mám sa počas auditu zamerať na niečo extrémne špecifické?',
+    };
+
     let tableRows = '';
     let markdownContent = '';
 
-    // Mapa pre ľudskejšie názvy polí
-    const fieldLabels: Record<string, string> = {
-      name: 'Meno a priezvisko',
-      email: 'Email',
-      phone: 'Telefón',
-      company: 'Firma',
-      industry: 'Odvetvie',
-      teamSize: 'Veľkosť tímu',
-      whatYouSell: 'Čo firma predáva',
-      typicalCustomer: 'Typický zákazník',
-      customerSource: 'Zdroj zákazníkov',
-      founderTasks: 'Hlavné úlohy zakladateľa',
-      magicWand: 'Čarovný prútik (zrušenie úlohy)',
-      marketingChallenge: 'Marketingová výzva',
-      salesTeam: 'Obchodný tím',
-      salesChallenge: 'Obchodná výzva',
-      deliveryBottleneck: 'Úzke hrdlo v operatíve',
-      recurringProblem: 'Opakujúci sa problém',
-      supportHeadaches: 'Bolesti hlavy v podpore',
-      aiExperience: 'Skúsenosti s AI',
-      aiToolsUsed: 'Použité AI nástroje',
-      successDefinition: 'Definícia úspechu',
-      specificFocus: 'Špecifické zameranie',
-      website: 'Webstránka / LinkedIn',
-      processes: 'Vykonávané procesy',
-      tool: 'Kľúčový nástroj',
-      acquisition: 'Akvizícia klientov',
-      salesProcess: 'Obchodný proces',
-      marketing: 'Marketingový tím',
-      salesChannel: 'Sales kanál',
-      crm: 'CRM systém',
-      painPoints: 'Administratívne pain points',
-      automateGoals: 'Ciele automatizácie',
-      support: 'Riešenie podpory',
-      expectations: 'Očakávania od AI',
-      priorities: 'Priority (12 mesiacov)',
-    };
-
     Object.entries(formData).forEach(([key, value]) => {
-      // Preskočíme technické polia alebo prázdne hodnoty
       if (['isSubmitting', 'isSuccess'].includes(key)) return;
       if (!value || (Array.isArray(value) && value.length === 0)) return;
 
@@ -61,12 +46,12 @@ export async function POST(request: Request) {
 
       tableRows += `
         <tr style="border-bottom: 1px solid #eee;">
-          <td style="padding: 12px 0; font-weight: bold; width: 35%; vertical-align: top; color: #666;">${label}</td>
-          <td style="padding: 12px 0; vertical-align: top; color: #111;">${displayValue}</td>
+          <td style="padding: 15px 0; font-weight: bold; width: 40%; vertical-align: top; color: #111; font-size: 14px;">${label}</td>
+          <td style="padding: 15px 0; vertical-align: top; color: #444; font-size: 14px;">${displayValue}</td>
         </tr>
       `;
 
-      markdownContent += `- **${label}:** ${displayValue}\n`;
+      markdownContent += `### ${label}\n${displayValue}\n\n`;
     });
 
     const markdownVersion = `
@@ -75,6 +60,9 @@ export async function POST(request: Request) {
 ${markdownContent}
     `.trim();
 
+    const encodedData = Buffer.from(markdownVersion, 'utf-8').toString('base64');
+    const copyLink = `https://website-production-7530.up.railway.app/formular/kopirovanie?data=${encodeURIComponent(encodedData)}`;
+
     // 1. INTERNÝ EMAIL (Pre tím Arcigy - hello@)
     await resend.emails.send({
       from: 'Arcigy Audit System <audit@arcigy.group>',
@@ -82,16 +70,36 @@ ${markdownContent}
       subject: `[ARCIGY-AUDIT-FORM] 🚨 NOVÝ DOPYT: ${name}`,
       html: `
         <div style="font-family: sans-serif; background: #FFFFFF; color: #111111; padding: 40px; line-height: 1.6; max-width: 800px; margin: 0 auto;">
-          <h1 style="border-bottom: 2px solid #000000; padding-bottom: 10px; font-size: 22px;">NOVÝ DOPYT NA AI AUDIT</h1>
+          <h1 style="border-bottom: 4px solid #7C3AED; padding-bottom: 15px; font-size: 28px; letter-spacing: -1px; margin-bottom: 30px;">DOPYT NA AI AUDIT</h1>
           
-          <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+          <table style="width: 100%; border-collapse: collapse;">
             ${tableRows}
           </table>
 
-          <div style="margin-top: 50px; background: #F9F9F9; padding: 25px; border: 1px solid #DDD;">
-            <h3 style="font-size: 13px; margin-top: 0; color: #666;">MARKDOWN KÓPIA (pre CRM/Notion):</h3>
-            <pre style="background: #FFF; border: 1px solid #CCC; padding: 15px; white-space: pre-wrap; font-size: 12px; color: #111;">${markdownVersion}</pre>
+          <div style="margin-top: 60px; background: #0D0010; padding: 40px; border-radius: 16px;">
+            <table style="width: 100%; margin-bottom: 25px;">
+              <tr>
+                <td style="vertical-align: middle;">
+                  <h3 style="font-size: 14px; margin: 0; color: #A855F7; text-transform: uppercase; letter-spacing: 2px; font-weight: bold;">Markdown pre CRM / Notion</h3>
+                </td>
+                <td style="text-align: right; vertical-align: middle;">
+                   <!--[if mso]>
+                    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${copyLink}" style="height:44px;v-text-anchor:middle;width:200px;" arcsize="15%" stroke="f" fillcolor="#7C3AED">
+                      <w:anchorlock/>
+                      <center style="color:#ffffff;font-family:sans-serif;font-size:13px;font-weight:bold;">KOPÍROVAŤ CELÚ SPRÁVU</center>
+                    </v:roundrect>
+                  <![endif]-->
+                  <a href="${copyLink}" style="background-color:#7C3AED;border-radius:6px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:13px;font-weight:bold;line-height:44px;text-align:center;text-decoration:none;width:200px;-webkit-text-size-adjust:none;mso-hide:all;">KOPÍROVAŤ CELÚ SPRÁVU</a>
+                </td>
+              </tr>
+            </table>
+            
+            <pre style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 25px; white-space: pre-wrap; font-size: 13px; color: #E2D9F3; border-radius: 12px; font-family: monospace;">${markdownVersion}</pre>
           </div>
+          
+          <p style="font-size: 12px; color: #999; margin-top: 50px; text-align: center; border-top: 1px solid #EEE; padding-top: 20px;">
+            Vygenerované automaticky systémom Arcigy pre internú potrebu.
+          </p>
         </div>
       `,
     });
