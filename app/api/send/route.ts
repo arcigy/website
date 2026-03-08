@@ -48,8 +48,9 @@ export async function POST(request: Request) {
 - **Tri najdôležitejšie priority (12 mesiacov):** ${priorities}
     `.trim();
 
-    const data = await resend.emails.send({
-      from: 'Arcigy Audit System <hello@arcigy.group>',
+    // 1. INTERNÝ EMAIL (Pre tím Arcigy - hello@)
+    await resend.emails.send({
+      from: 'Arcigy Audit System <audit@arcigy.group>',
       to: ['hello@arcigy.group'],
       subject: `[ARCIGY-AUDIT-FORM] 🚨 NOVÝ DOPYT: ${name} (${teamSize})`,
       html: `
@@ -113,7 +114,37 @@ export async function POST(request: Request) {
       `,
     });
 
-    return Response.json(data);
+    // 2. KLIENTSKÝ EMAIL (Potvrdenie pre zákazníka)
+    const clientData = await resend.emails.send({
+      from: 'Andrej z Arcigy <audit@arcigy.group>',
+      to: [email],
+      subject: `Ďakujeme za váš dopyt na AI Audit, ${name}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #FFFFFF; color: #111111; padding: 40px; border: 1px solid #EEE; border-radius: 8px;">
+          <h2 style="color: #7C3AED; font-size: 24px; margin-bottom: 20px;">Dobrý deň, ${name}.</h2>
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            Ďakujeme za váš záujem o AI Audit pre firmu <strong>${website || 'vašu spoločnosť'}</strong>. Vaše odpovede sme úspešne prijali.
+          </p>
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            Práve teraz analyzujeme vaše odpovede. Náš tím sa vám ozve čoskoro s návrhom termínu pre náš úvodný hovor, kde prejdeme všetky detaily a možnosti automatizácie.
+          </p>
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
+            Zatiaľ si môžete pozrieť naše riešenia na webe, aby ste videli, čo všetko dokážeme vo firmách zefektívniť.
+          </p>
+          <div style="text-align: center;">
+            <a href="https://arcigy.group" style="display: inline-block; background: #7C3AED; color: #FFFFFF; padding: 16px 32px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 16px;">SPÄŤ NA WEB</a>
+          </div>
+          <hr style="border: 0; border-top: 1px solid #EEE; margin: 40px 0;" />
+          <p style="font-size: 14px; color: #666; margin-bottom: 5px;">S pozdravom,</p>
+          <p style="font-size: 16px; font-weight: bold; margin-top: 0;">Tím Arcigy</p>
+          <p style="font-size: 12px; color: #999; margin-top: 20px;">
+            Tento email bol odoslaný automaticky po vyplnení formulára na arcigy.group
+          </p>
+        </div>
+      `,
+    });
+
+    return Response.json(clientData);
   } catch (error) {
     return Response.json({ error }, { status: 500 });
   }
