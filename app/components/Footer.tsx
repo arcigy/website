@@ -35,7 +35,7 @@ export default function Footer() {
           {/* Logo + tagline */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <Image 
-              src="/logo.png" 
+              src="/arcigy-logo-official.png" 
               alt="ARCIGY" 
               width={140}
               height={32}

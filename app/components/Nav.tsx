@@ -77,7 +77,7 @@ export default function Nav() {
     >
       <Link href="/" className="nav-logo" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
         <Image 
-          src="/logo.png" 
+          src="/arcigy-logo-official.png" 
           alt="ARCIGY" 
           width={120}
           height={28}
