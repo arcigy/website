@@ -77,13 +77,13 @@ export default function Nav() {
     >
       <Link href="/" className="nav-logo" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
         <Image 
-          src="/arcigy-logo-official.png" 
+          src="/arcigy-wordmark-footer.png" 
           alt="ARCIGY" 
           width={120}
           height={28}
           priority
           style={{ 
-            height: '28px', 
+            height: '24px', 
             width: 'auto',
             filter: 'brightness(1.1)',
             transition: 'transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)'

@@ -33,18 +33,17 @@ export default function Footer() {
           }}
         >
           {/* Logo + tagline */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', width: '100%' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <Image 
-              src="/arcigy-wordmark-footer.png" 
+              src="/arcigy-logo-official.png" 
               alt="ARCIGY" 
-              width={800}
-              height={150}
+              width={140}
+              height={32}
               style={{ 
-                height: 'clamp(60px, 8vw, 120px)', 
+                height: '32px', 
                 width: 'auto',
                 filter: 'brightness(1.1)',
-                display: 'block',
-                marginLeft: '-0.05em' // Optical alignment for large 'A'
+                display: 'block'
               }} 
             />
             <p
