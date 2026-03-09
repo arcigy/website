@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import VideoModal from './VideoModal';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import Image from 'next/image';
+
 
 export default function Nav() {
   const [isVideoOpen, setIsVideoOpen] = useState(false);
@@ -75,32 +75,26 @@ export default function Nav() {
         borderRadius: '100px',
       }}
     >
-      <Link href="/" className="nav-logo" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-        <Image 
-          src="/arcigy-wordmark-footer.png" 
-          alt="ARCIGY" 
-          width={786}
-          height={168}
-          priority
-          style={{ 
-            height: '24px', 
-            width: 'auto',
-            filter: 'brightness(1.1)',
-            transition: 'transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)',
-            objectFit: 'contain'
-          }} 
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-        />
+      <Link href="/" className="nav-logo" style={{ 
+        textDecoration: 'none', 
+        display: 'flex', 
+        alignItems: 'center',
+        fontFamily: 'var(--font-display)',
+        fontSize: 'clamp(1.2rem, 2vw, 1.5rem)',
+        letterSpacing: '0.15em',
+        color: 'var(--white)',
+        fontWeight: 700
+      }}>
+        ARC<span style={{ color: 'var(--electric)' }}>I</span>GY
       </Link>
 
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
         <a
           href="mailto:hello@arcigy.group"
           style={{
             fontFamily: 'var(--font-mono)',
             fontSize: '0.7rem',
-            letterSpacing: '0.1em',
+            letterSpacing: '0.15em',
             color: 'var(--white)',
             textDecoration: 'none',
             padding: '0.75rem 1.5rem',
@@ -124,7 +118,7 @@ export default function Nav() {
           style={{
             fontFamily: 'var(--font-mono)',
             fontSize: '0.7rem',
-            letterSpacing: '0.1em',
+            letterSpacing: '0.15em',
             color: 'var(--white)',
             background: 'transparent',
             border: 'none',
@@ -133,6 +127,9 @@ export default function Nav() {
             borderRadius: '50px',
             transition: 'background 0.3s ease',
             textTransform: 'uppercase',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
           }}
           onMouseEnter={(e: React.MouseEvent) => {
             (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)';
@@ -141,17 +138,14 @@ export default function Nav() {
             (e.currentTarget as HTMLElement).style.background = 'transparent';
           }}
         >
-          <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <span style={{ 
-              display: 'inline-block', 
-              width: '4px', 
-              height: '4px', 
-              backgroundColor: 'var(--electric)', 
-              borderRadius: '50%',
-              boxShadow: '0 0 8px var(--glow-electric)'
-            }}></span>
-            Ukážka
-          </span>
+          <span style={{ 
+            width: '4px', 
+            height: '4px', 
+            backgroundColor: 'var(--electric)', 
+            borderRadius: '50%',
+            boxShadow: '0 0 8px var(--glow-electric)'
+          }}></span>
+          Ukážka
         </button>
 
         <Link
@@ -159,27 +153,30 @@ export default function Nav() {
           style={{
             fontFamily: 'var(--font-mono)',
             fontSize: '0.7rem',
-            letterSpacing: '0.1em',
+            letterSpacing: '0.15em',
             color: 'var(--bg)',
             background: 'var(--electric)',
             textDecoration: 'none',
-            padding: '0.75rem 1.75rem',
-            borderRadius: '50px',
-            fontWeight: 600,
+            padding: '0.75rem 2rem',
+            borderRadius: '100px',
+            fontWeight: 700,
             textTransform: 'uppercase',
-            transition: 'transform 0.3s ease, background 0.3s ease',
+            transition: 'transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), background 0.3s ease, box-shadow 0.3s ease',
+            display: 'inline-block'
           }}
           onMouseEnter={(e: React.MouseEvent) => {
             (e.currentTarget as HTMLElement).style.transform = 'scale(1.02)';
             (e.currentTarget as HTMLElement).style.background = 'var(--neon)';
+            (e.currentTarget as HTMLElement).style.boxShadow = '0 0 30px var(--glow-electric)';
           }}
           onMouseLeave={(e: React.MouseEvent) => {
             (e.currentTarget as HTMLElement).style.transform = 'scale(1)';
             (e.currentTarget as HTMLElement).style.background = 'var(--electric)';
+            (e.currentTarget as HTMLElement).style.boxShadow = 'none';
           }}
           id="nav-cta"
         >
-          15-minútový call
+          15-MINÚTOVÝ CALL
         </Link>
       </div>
     </nav>
