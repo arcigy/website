@@ -38,12 +38,21 @@ export default function Nav() {
   };
 
   const runDemoSequence = useCallback(async () => {
+    if (typeof window === 'undefined') return;
+    
     setIsDemoActive(true);
     router.replace(pathname, { scroll: false }); 
-    document.body.style.pointerEvents = 'none';
-    document.body.style.overflow = 'hidden';
+    
+    try {
+      if (document.body) {
+        document.body.style.pointerEvents = 'none';
+        document.body.style.overflow = 'hidden';
+      }
+    } catch (e) {
+      console.warn('Demo sequence init failed:', e);
+    }
 
-    await new Promise(r => setTimeout(r, 2000));
+    await new Promise(r => window.setTimeout(r, 2000));
 
     const btn = document.getElementById('nav-demo-trigger');
     if (btn) {
@@ -52,23 +61,31 @@ export default function Nav() {
       const targetY = rect.top + rect.height / 2;
 
       setDemoCursorPos({ x: targetX, y: targetY });
-      await new Promise(r => setTimeout(r, 1200));
+      await new Promise(r => window.setTimeout(r, 1200));
       
       setIsAutoTriggered(true);
       setIsVideoOpen(true);
       setIsDemoActive(false);
     }
 
-    document.body.style.pointerEvents = 'auto';
-    document.body.style.overflow = 'auto';
+    try {
+      if (document.body) {
+        document.body.style.pointerEvents = 'auto';
+        document.body.style.overflow = 'auto';
+      }
+    } catch (e) {
+      console.warn('Demo sequence cleanup issue:', e);
+    }
   }, [pathname, router]);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     if (searchParams.get('demo') === 'active') {
-      const timer = setTimeout(() => {
+      const timer = window.setTimeout(() => {
         runDemoSequence();
       }, 100);
-      return () => clearTimeout(timer);
+      return () => window.clearTimeout(timer);
     }
   }, [searchParams, runDemoSequence]);
 
