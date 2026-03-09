@@ -40,7 +40,7 @@ export default function Footer() {
               width={1024}
               height={682}
               style={{ 
-                height: 'clamp(50px, 6vw, 72px)', 
+                height: 'clamp(100px, 12vw, 160px)', 
                 width: 'auto',
                 filter: 'brightness(1.1)',
                 display: 'block',
