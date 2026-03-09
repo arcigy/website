@@ -86,7 +86,8 @@ export default function Nav() {
             height: '24px', 
             width: 'auto',
             filter: 'brightness(1.1)',
-            transition: 'transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)'
+            transition: 'transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)',
+            objectFit: 'contain'
           }} 
           onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
           onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}

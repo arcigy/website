@@ -33,7 +33,7 @@ export default function Footer() {
           }}
         >
           {/* Logo + tagline */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'flex-start' }}>
             <Image 
               src="/arcigy-logo-official.png" 
               alt="ARCIGY" 
@@ -43,7 +43,8 @@ export default function Footer() {
                 height: '32px', 
                 width: 'auto',
                 filter: 'brightness(1.1)',
-                display: 'block'
+                display: 'block',
+                objectFit: 'contain'
               }} 
             />
             <p
