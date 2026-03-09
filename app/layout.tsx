@@ -16,6 +16,13 @@ export const metadata: Metadata = {
 import SmoothScroll from './components/SmoothScroll';
 import CookieConsent from './components/CookieConsent';
 import Script from 'next/script';
+import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
+
+const Nav = dynamic(() => import('./components/Nav'), { ssr: false });
+const ShaderBackground = dynamic(() => import('./components/ShaderBackground'), { ssr: false });
+const CustomCursor = dynamic(() => import('./components/CustomCursor'), { ssr: false });
+const FloatingScrollbar = dynamic(() => import('./components/FloatingScrollbar'), { ssr: false });
 
 export default function RootLayout({
   children,
@@ -69,7 +76,13 @@ export default function RootLayout({
         </Script>
       </head>
       <body suppressHydrationWarning>
+        <ShaderBackground />
+        <CustomCursor />
+        <FloatingScrollbar />
         <SmoothScroll />
+        <Suspense fallback={null}>
+          <Nav />
+        </Suspense>
         <CookieConsent />
         {children}
       </body>

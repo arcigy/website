@@ -1,12 +1,7 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import BookingSystem from '../components/BookingSystem';
-
-
-const ShaderBackground = dynamic(() => import('../components/ShaderBackground'), { ssr: false });
-const CustomCursor = dynamic(() => import('../components/CustomCursor'), { ssr: false });
 
 export default function AuditPage() {
   return (
@@ -21,8 +16,6 @@ export default function AuditPage() {
         fontFamily: 'var(--font-display)',
       }}
     >
-      <ShaderBackground />
-      <CustomCursor />
       
       <nav 
         style={{

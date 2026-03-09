@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import VideoModal from './VideoModal';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -14,6 +14,10 @@ export default function Nav() {
   const [demoCursorPos, setDemoCursorPos] = useState({ x: 0, y: 0 });
   const searchParams = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
+
+  // Hide nav on audit page to avoid conflict with booking navigation
+  const isAuditPage = pathname === '/audit';
 
   const runDemoSequence = useCallback(async () => {
     setIsDemoActive(true);
@@ -67,7 +71,7 @@ export default function Nav() {
   return (
     <>
     <nav
-      className="fixed bottom-4 md:bottom-10 left-1/2 -translate-x-1/2 z-[100] flex items-center justify-between md:justify-center w-[calc(100%-2rem)] md:w-auto gap-4 md:gap-10 bg-[#06000a]/80 backdrop-blur-md border border-purple-500/40 rounded-full px-5 py-3 md:pl-8 md:pr-3 shadow-[0_10px_40px_rgba(124,58,237,0.4)]"
+      className={`fixed bottom-4 md:bottom-10 left-1/2 -translate-x-1/2 z-[100] flex items-center justify-between md:justify-center w-[calc(100%-2rem)] md:w-auto gap-4 md:gap-10 bg-[#06000a]/80 backdrop-blur-md border border-purple-500/40 rounded-full px-5 py-3 md:pl-8 md:pr-3 shadow-[0_10px_40px_rgba(124,58,237,0.4)] transition-opacity duration-500 ${isAuditPage ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
     >
       <Link href="/" className="nav-logo shrink-0" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
         <Image 
