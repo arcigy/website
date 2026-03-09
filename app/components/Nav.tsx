@@ -79,8 +79,8 @@ export default function Nav() {
         <Image 
           src="/arcigy-wordmark-footer.png" 
           alt="ARCIGY" 
-          width={112}
-          height={24}
+          width={786}
+          height={168}
           priority
           style={{ 
             height: '24px', 
