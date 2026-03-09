@@ -62,19 +62,31 @@ export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered 
   useEffect(() => {
     if (isOpen) {
       if (videoRef.current) {
+        // Reset state but check if already loaded
+        setIsPlaying(false);
+        setHasStarted(false);
+        
+        // If already loaded (e.g. from background preloader), mark as ready immediately
+        if (videoRef.current.readyState >= 3) {
+          setIsReady(true);
+        } else {
+          setIsReady(false);
+        }
+
         videoRef.current.currentTime = 0;
         videoRef.current.pause(); 
         
         setTimeout(() => {
-          setIsPlaying(false);
-          setHasStarted(false); 
-          setIsReady(false); // Reset on open
-          
+          // Double check readyState after a beat
+          if (videoRef.current && videoRef.current.readyState >= 2) {
+             setIsReady(true);
+          }
+
           if (!isAutoTriggered) {
              startAutoplay();
              setHasStarted(true);
           }
-        }, 50);
+        }, 100);
       }
     } else {
       if (startTimeoutRef.current) clearTimeout(startTimeoutRef.current);
@@ -83,6 +95,7 @@ export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered 
         setTimeout(() => {
            setIsPlaying(false);
            setHasStarted(false);
+           setIsReady(false);
         }, 50);
       }
       
@@ -314,6 +327,8 @@ export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered 
               src={videoSrc}
               playsInline
               preload="auto"
+              onLoadedData={() => setIsReady(true)}
+              onCanPlay={() => setIsReady(true)}
               onCanPlayThrough={() => setIsReady(true)}
               onEnded={handleVideoEnd}
               onPlay={() => setIsPlaying(true)}
