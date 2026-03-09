@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect, useCallback } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import VideoModal from './VideoModal';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -13,15 +13,21 @@ export default function Nav() {
   const [isDemoActive, setIsDemoActive] = useState(false);
   const [demoCursorPos, setDemoCursorPos] = useState({ x: 0, y: 0 });
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const runDemoSequence = useCallback(async () => {
     setIsDemoActive(true);
+    
+    // 0. Clean up URL immediately so user doesn't see ?demo=active for long
+    // Using replace to keep history clean
+    router.replace('/', { scroll: false });
+
     // 1. Lock UI
     document.body.style.pointerEvents = 'none';
     document.body.style.overflow = 'hidden';
 
-    // 2. Wait 2 seconds
-    await new Promise(r => setTimeout(r, 2000));
+    // 2. Wait 1.5 seconds (reduced from 2s for better pacing)
+    await new Promise(r => setTimeout(r, 1500));
 
     // 3. Find button position
     const btn = document.getElementById('nav-demo-trigger');
@@ -38,12 +44,16 @@ export default function Nav() {
       // 5. Click!
       setIsVideoOpen(true);
       setIsDemoActive(false);
+    } else {
+        // Fallback if button not found (shouldn't happen now)
+        setIsVideoOpen(true);
+        setIsDemoActive(false);
     }
 
     // Unlock UI
     document.body.style.pointerEvents = 'auto';
     document.body.style.overflow = 'auto';
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     if (searchParams.get('demo') === 'active') {
@@ -81,10 +91,10 @@ export default function Nav() {
         <button
           id="nav-demo-trigger"
           onClick={() => setIsVideoOpen(true)}
-          className="hidden md:flex items-center gap-2 font-mono text-[0.7rem] tracking-widest text-white uppercase bg-transparent border-none cursor-none px-6 py-3 rounded-full hover:bg-white/5 transition-colors"
+          className="flex items-center gap-2 font-mono text-[0.65rem] md:text-[0.7rem] tracking-widest text-white uppercase bg-transparent border-none cursor-none px-3 md:px-6 py-3 rounded-full hover:bg-white/5 transition-colors"
         >
           <span className="w-1 h-1 bg-[var(--electric)] rounded-full shadow-[0_0_8px_var(--glow-electric)]"></span>
-          Ukážka
+          <span className="md:inline">Ukážka</span>
         </button>
 
         <Link

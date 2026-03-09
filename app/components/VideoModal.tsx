@@ -68,10 +68,8 @@ export default function VideoModal({ isOpen, onClose, videoSrc }: VideoModalProp
         setTimeout(() => {
           setIsPlaying(false);
           
-          // FOR SHOWCASE: We don't autoplay. Force user to click play button in modal.
-          if (!isDemoMode) {
-            startAutoplay();
-          }
+          // Autoplay on open (dramatic entrance)
+          startAutoplay();
         }, 50);
       }
     } else {
