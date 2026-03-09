@@ -22,6 +22,8 @@ export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered 
   const [duration, setDuration] = useState(0);
   
   const [isReady, setIsReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [bufferingProgress, setBufferingProgress] = useState(0);
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -160,8 +162,9 @@ export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered 
     e.stopPropagation();
     if (!videoRef.current) return;
     
-    videoRef.current.muted = !isMuted;
-    setIsMuted(!isMuted);
+    const newMuted = !isMuted;
+    videoRef.current.muted = newMuted;
+    setIsMuted(newMuted);
   };
 
   const toggleFullscreenNative = (e: React.MouseEvent) => {
@@ -318,9 +321,20 @@ export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered 
               src={videoSrc}
               playsInline
               preload="auto"
+              muted={isMuted}
               onLoadedData={() => setIsReady(true)}
               onCanPlay={() => setIsReady(true)}
               onCanPlayThrough={() => setIsReady(true)}
+              onProgress={() => {
+                if (videoRef.current && videoRef.current.buffered.length > 0) {
+                  const bufferedEnd = videoRef.current.buffered.end(videoRef.current.buffered.length - 1);
+                  const duration = videoRef.current.duration;
+                  if (duration > 0) {
+                    setBufferingProgress(Math.round((bufferedEnd / duration) * 100));
+                  }
+                }
+              }}
+              onError={() => setError('Nepodarilo sa načítať video. Skontrolujte pripojenie.')}
               onEnded={handleVideoEnd}
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
@@ -332,14 +346,15 @@ export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered 
                 objectFit: 'contain',
                 outline: 'none',
                 willChange: 'transform',
-                opacity: isReady ? 1 : 0,
-                transition: 'opacity 0.6s ease'
+                opacity: (isReady && !error) ? 1 : 0,
+                transition: 'opacity 0.6s ease',
+                background: '#000'
               }}
             />
 
             {/* Premium Buffering Indicator */}
             <AnimatePresence>
-              {!isReady && (
+              {!isReady && !error && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -367,16 +382,65 @@ export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered 
                       }}
                     />
                   </div>
-                  <span style={{ 
-                    fontFamily: 'var(--font-mono)', 
-                    fontSize: '0.8rem', 
-                    letterSpacing: '0.4em',
-                    color: 'var(--electric)',
-                    opacity: 0.8,
-                    textTransform: 'uppercase'
-                  }}>
-                    Synchronizácia dát...
-                  </span>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ 
+                      fontFamily: 'var(--font-mono)', 
+                      fontSize: '0.8rem', 
+                      letterSpacing: '0.4em',
+                      color: 'var(--electric)',
+                      opacity: 0.8,
+                      textTransform: 'uppercase'
+                    }}>
+                      Synchronizácia dát...
+                    </span>
+                    {bufferingProgress > 0 && (
+                      <span style={{ 
+                        fontFamily: 'var(--font-mono)', 
+                        fontSize: '0.6rem', 
+                        color: 'var(--muted)',
+                        letterSpacing: '0.2em'
+                      }}>
+                        {bufferingProgress}%
+                      </span>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Error Message Case */}
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  style={{
+                    position: 'absolute',
+                    zIndex: 80,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '1.5rem',
+                    padding: '2rem',
+                    textAlign: 'center'
+                  }}
+                >
+                  <span style={{ color: 'var(--electric)', fontFamily: 'var(--font-display)', fontSize: '1.5rem' }}>UPS!</span>
+                  <p style={{ color: 'var(--white)', opacity: 0.7, maxWidth: '300px' }}>{error}</p>
+                  <button 
+                    onClick={() => { setError(null); setIsReady(false); if(videoRef.current) videoRef.current.load(); }}
+                    style={{
+                      background: 'var(--electric)',
+                      color: '#000',
+                      border: 'none',
+                      padding: '0.8rem 2rem',
+                      borderRadius: '50px',
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    SKÚSIŤ ZNOVA
+                  </button>
                 </motion.div>
               )}
             </AnimatePresence>
