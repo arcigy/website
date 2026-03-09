@@ -22,6 +22,7 @@ export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered 
   const [duration, setDuration] = useState(0);
   
   const [hasStarted, setHasStarted] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -41,12 +42,11 @@ export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered 
     // Wait 1.2s for a more "pro" dramatic entrance (black screen first)
     if (startTimeoutRef.current) clearTimeout(startTimeoutRef.current);
     startTimeoutRef.current = setTimeout(() => {
-      if (videoRef.current && isOpen) {
+      if (videoRef.current && isOpen && isReady) {
         videoRef.current.play()
           .then(() => setIsPlaying(true))
           .catch(err => {
             console.warn('Autoplay blocked, attempting muted play...', err);
-            // If autoplay is blocked, browsers often allow it if muted
             if (videoRef.current) {
               videoRef.current.muted = true;
               setIsMuted(true);
@@ -57,7 +57,7 @@ export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered 
           });
       }
     }, 1200);
-  }, [isOpen]);
+  }, [isOpen, isReady]);
 
   useEffect(() => {
     if (isOpen) {
@@ -67,9 +67,9 @@ export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered 
         
         setTimeout(() => {
           setIsPlaying(false);
-          setHasStarted(false); // Reset on open
+          setHasStarted(false); 
+          setIsReady(false); // Reset on open
           
-          // Only autoplay if NOT system-triggered (to protect audio)
           if (!isAutoTriggered) {
              startAutoplay();
              setHasStarted(true);
@@ -314,6 +314,7 @@ export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered 
               src={videoSrc}
               playsInline
               preload="auto"
+              onCanPlayThrough={() => setIsReady(true)}
               onEnded={handleVideoEnd}
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
@@ -324,13 +325,59 @@ export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered 
                 height: '100%',
                 objectFit: 'contain',
                 outline: 'none',
-                willChange: 'transform' // Performance optimization
+                willChange: 'transform',
+                opacity: isReady ? 1 : 0,
+                transition: 'opacity 0.6s ease'
               }}
             />
 
+            {/* Premium Buffering Indicator */}
+            <AnimatePresence>
+              {!isReady && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  style={{
+                    position: 'absolute',
+                    zIndex: 70,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '2rem'
+                  }}
+                >
+                  <div className="relative">
+                    <motion.div 
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                      style={{
+                        width: '60px',
+                        height: '60px',
+                        borderRadius: '50%',
+                        border: '2px solid rgba(168, 85, 247, 0.1)',
+                        borderTopColor: 'var(--electric)',
+                        boxShadow: '0 0 20px var(--glow-electric)'
+                      }}
+                    />
+                  </div>
+                  <span style={{ 
+                    fontFamily: 'var(--font-mono)', 
+                    fontSize: '0.8rem', 
+                    letterSpacing: '0.4em',
+                    color: 'var(--electric)',
+                    opacity: 0.8,
+                    textTransform: 'uppercase'
+                  }}>
+                    Synchronizácia dát...
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* START OVERLAY for Demo Mode */}
             <AnimatePresence>
-              {isAutoTriggered && !hasStarted && (
+              {isAutoTriggered && !hasStarted && isReady && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}

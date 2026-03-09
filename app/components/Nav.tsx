@@ -425,6 +425,13 @@ export default function Nav() {
           </motion.div>
         )}
       </AnimatePresence>
+      {/* Global Video Preloader - hidden but active */}
+      <video
+        src="https://pub-940e42d6aeea403e9c1c9e8d91684329.r2.dev/Timeline%201.mp4"
+        preload="auto"
+        muted
+        style={{ display: 'none' }}
+      />
     </>
   );
 }
