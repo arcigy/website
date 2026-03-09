@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import VideoModal from './VideoModal';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -13,25 +13,15 @@ export default function Nav() {
   const [isDemoActive, setIsDemoActive] = useState(false);
   const [demoCursorPos, setDemoCursorPos] = useState({ x: 0, y: 0 });
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-
-  // Hide nav on audit page to avoid conflict with booking navigation
-  const isAuditPage = pathname === '/audit';
 
   const runDemoSequence = useCallback(async () => {
     setIsDemoActive(true);
-    
-    // 0. Clean up URL immediately so user doesn't see ?demo=active for long
-    // Using replace to keep history clean
-    router.replace('/', { scroll: false });
-
     // 1. Lock UI
     document.body.style.pointerEvents = 'none';
     document.body.style.overflow = 'hidden';
 
-    // 2. Wait 1.5 seconds (reduced from 2s for better pacing)
-    await new Promise(r => setTimeout(r, 1500));
+    // 2. Wait 2 seconds
+    await new Promise(r => setTimeout(r, 2000));
 
     // 3. Find button position
     const btn = document.getElementById('nav-demo-trigger');
@@ -48,16 +38,12 @@ export default function Nav() {
       // 5. Click!
       setIsVideoOpen(true);
       setIsDemoActive(false);
-    } else {
-        // Fallback if button not found (shouldn't happen now)
-        setIsVideoOpen(true);
-        setIsDemoActive(false);
     }
 
     // Unlock UI
     document.body.style.pointerEvents = 'auto';
     document.body.style.overflow = 'auto';
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     if (searchParams.get('demo') === 'active') {
@@ -71,23 +57,63 @@ export default function Nav() {
   return (
     <>
     <nav
-      className={`fixed bottom-4 md:bottom-10 left-1/2 -translate-x-1/2 z-[100] flex items-center justify-between md:justify-center w-[calc(100%-2rem)] md:w-auto gap-4 md:gap-10 bg-[#06000a]/80 backdrop-blur-md border border-purple-500/40 rounded-full px-5 py-3 md:pl-8 md:pr-3 shadow-[0_10px_40px_rgba(124,58,237,0.4)] transition-opacity duration-500 ${isAuditPage ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+      className="nav"
+      style={{
+        position: 'fixed',
+        bottom: '2.5rem',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 100,
+        padding: '0.75rem 0.75rem 0.75rem 2rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 'clamp(2rem, 4vw, 4rem)',
+        background: 'rgba(6, 0, 10, 0.8)',
+        backdropFilter: 'blur(16px)',
+        border: '1px solid var(--border-bright)',
+        borderRadius: '100px',
+      }}
     >
-      <Link href="/" className="nav-logo shrink-0" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+      <Link href="/" className="nav-logo" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
         <Image 
           src="/arcigy-wordmark-footer.png" 
           alt="ARCIGY" 
           width={786}
           height={168}
           priority
-          className="h-[18px] md:h-[24px] w-auto brightness-110 object-contain transition-transform duration-300 hover:scale-105"
+          style={{ 
+            height: '24px', 
+            width: 'auto',
+            filter: 'brightness(1.1)',
+            transition: 'transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)',
+            objectFit: 'contain'
+          }} 
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
         />
       </Link>
 
-      <div className="flex items-center gap-2">
+      <div style={{ display: 'flex', gap: '0.5rem' }}>
         <a
           href="mailto:hello@arcigy.group"
-          className="hidden md:flex items-center font-mono text-[0.7rem] tracking-widest text-white uppercase px-6 py-3 rounded-full hover:bg-white/5 transition-colors"
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.7rem',
+            letterSpacing: '0.1em',
+            color: 'var(--white)',
+            textDecoration: 'none',
+            padding: '0.75rem 1.5rem',
+            borderRadius: '50px',
+            transition: 'background 0.3s ease',
+            textTransform: 'uppercase',
+          }}
+          onMouseEnter={(e: React.MouseEvent) => {
+            (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)';
+          }}
+          onMouseLeave={(e: React.MouseEvent) => {
+            (e.currentTarget as HTMLElement).style.background = 'transparent';
+          }}
         >
           Kontakt
         </a>
@@ -95,18 +121,65 @@ export default function Nav() {
         <button
           id="nav-demo-trigger"
           onClick={() => setIsVideoOpen(true)}
-          className="flex items-center gap-2 font-mono text-[0.65rem] md:text-[0.7rem] tracking-widest text-white uppercase bg-transparent border-none cursor-none px-3 md:px-6 py-3 rounded-full hover:bg-white/5 transition-colors"
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.7rem',
+            letterSpacing: '0.1em',
+            color: 'var(--white)',
+            background: 'transparent',
+            border: 'none',
+            cursor: 'none',
+            padding: '0.75rem 1.5rem',
+            borderRadius: '50px',
+            transition: 'background 0.3s ease',
+            textTransform: 'uppercase',
+          }}
+          onMouseEnter={(e: React.MouseEvent) => {
+            (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)';
+          }}
+          onMouseLeave={(e: React.MouseEvent) => {
+            (e.currentTarget as HTMLElement).style.background = 'transparent';
+          }}
         >
-          <span className="w-1 h-1 bg-[var(--electric)] rounded-full shadow-[0_0_8px_var(--glow-electric)]"></span>
-          <span className="md:inline">Ukážka</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <span style={{ 
+              display: 'inline-block', 
+              width: '4px', 
+              height: '4px', 
+              backgroundColor: 'var(--electric)', 
+              borderRadius: '50%',
+              boxShadow: '0 0 8px var(--glow-electric)'
+            }}></span>
+            Ukážka
+          </span>
         </button>
 
         <Link
           href="/audit"
-          className="flex items-center font-mono text-[0.65rem] md:text-[0.7rem] tracking-widest text-[var(--bg)] bg-[var(--electric)] hover:bg-[var(--neon)] uppercase font-semibold px-4 py-2 md:px-7 md:py-3 rounded-full transition-all duration-300 hover:scale-105 whitespace-nowrap"
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.7rem',
+            letterSpacing: '0.1em',
+            color: 'var(--bg)',
+            background: 'var(--electric)',
+            textDecoration: 'none',
+            padding: '0.75rem 1.75rem',
+            borderRadius: '50px',
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            transition: 'transform 0.3s ease, background 0.3s ease',
+          }}
+          onMouseEnter={(e: React.MouseEvent) => {
+            (e.currentTarget as HTMLElement).style.transform = 'scale(1.02)';
+            (e.currentTarget as HTMLElement).style.background = 'var(--neon)';
+          }}
+          onMouseLeave={(e: React.MouseEvent) => {
+            (e.currentTarget as HTMLElement).style.transform = 'scale(1)';
+            (e.currentTarget as HTMLElement).style.background = 'var(--electric)';
+          }}
           id="nav-cta"
         >
-          15-min call
+          15-minútový call
         </Link>
       </div>
     </nav>
