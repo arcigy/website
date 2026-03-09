@@ -13,9 +13,17 @@ export default function Nav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDemoActive, setIsDemoActive] = useState(false);
   const [demoCursorPos, setDemoCursorPos] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleCloseModal = () => {
     setIsVideoOpen(false);
@@ -24,7 +32,7 @@ export default function Nav() {
 
   const runDemoSequence = useCallback(async () => {
     setIsDemoActive(true);
-    router.replace(pathname, { scroll: false }); // Clean up URL immediately
+    router.replace(pathname, { scroll: false }); 
     document.body.style.pointerEvents = 'none';
     document.body.style.overflow = 'hidden';
 
@@ -50,7 +58,6 @@ export default function Nav() {
 
   useEffect(() => {
     if (searchParams.get('demo') === 'active') {
-      // Set state to trigger sequence
       const timer = setTimeout(() => {
         runDemoSequence();
       }, 100);
@@ -94,67 +101,69 @@ export default function Nav() {
           ARC<span style={{ color: 'var(--electric)' }}>I</span>GY
         </Link>
 
-        {/* Desktop Links - Hidden on Mobile */}
-        <div className="hidden md:flex" style={{ gap: '0.5rem', alignItems: 'center' }}>
-          <a
-            href="mailto:hello@arcigy.group"
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.7rem',
-              letterSpacing: '0.15em',
-              color: 'var(--white)',
-              textDecoration: 'none',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '50px',
-              transition: 'background 0.3s ease',
-              textTransform: 'uppercase',
-            }}
-            onMouseEnter={(e: React.MouseEvent) => {
-              (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)';
-            }}
-            onMouseLeave={(e: React.MouseEvent) => {
-              (e.currentTarget as HTMLElement).style.background = 'transparent';
-            }}
-          >
-            Kontakt
-          </a>
+        {/* Desktop Links (>= 1024px) */}
+        {!isMobile && (
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <a
+              href="mailto:hello@arcigy.group"
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.7rem',
+                letterSpacing: '0.15em',
+                color: 'var(--white)',
+                textDecoration: 'none',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '50px',
+                transition: 'background 0.3s ease',
+                textTransform: 'uppercase',
+              }}
+              onMouseEnter={(e: React.MouseEvent) => {
+                (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)';
+              }}
+              onMouseLeave={(e: React.MouseEvent) => {
+                (e.currentTarget as HTMLElement).style.background = 'transparent';
+              }}
+            >
+              Kontakt
+            </a>
 
-          <button
-            id="nav-demo-trigger"
-            onClick={() => setIsVideoOpen(true)}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.7rem',
-              letterSpacing: '0.15em',
-              color: 'var(--white)',
-              background: 'transparent',
-              border: 'none',
-              cursor: 'none',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '50px',
-              transition: 'background 0.3s ease',
-              textTransform: 'uppercase',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem'
-            }}
-            onMouseEnter={(e: React.MouseEvent) => {
-              (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)';
-            }}
-            onMouseLeave={(e: React.MouseEvent) => {
-              (e.currentTarget as HTMLElement).style.background = 'transparent';
-            }}
-          >
-            <span style={{ 
-              width: '4px', 
-              height: '4px', 
-              backgroundColor: 'var(--electric)', 
-              borderRadius: '50%',
-              boxShadow: '0 0 8px var(--glow-electric)'
-            }}></span>
-            Ukážka
-          </button>
-        </div>
+            <button
+              id="nav-demo-trigger"
+              onClick={() => setIsVideoOpen(true)}
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.7rem',
+                letterSpacing: '0.15em',
+                color: 'var(--white)',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'none',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '50px',
+                transition: 'background 0.3s ease',
+                textTransform: 'uppercase',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
+              onMouseEnter={(e: React.MouseEvent) => {
+                (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)';
+              }}
+              onMouseLeave={(e: React.MouseEvent) => {
+                (e.currentTarget as HTMLElement).style.background = 'transparent';
+              }}
+            >
+              <span style={{ 
+                width: '4px', 
+                height: '4px', 
+                backgroundColor: 'var(--electric)', 
+                borderRadius: '50%',
+                boxShadow: '0 0 8px var(--glow-electric)'
+              }}></span>
+              Ukážka
+            </button>
+          </div>
+        )}
 
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
           <Link
@@ -185,65 +194,182 @@ export default function Nav() {
             }}
             id="nav-cta"
           >
-            <span className="hidden md:inline">15-MINÚTOVÝ CALL</span>
-            <span className="md:hidden">15-MIN CALL</span>
+            {isMobile ? 'REZERVOVAŤ CALL' : '15-MINÚTOVÝ CALL'}
           </Link>
           
-          {/* Hamburger Toggle - Only on Mobile */}
-          <button 
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="flex md:hidden items-center justify-center w-10 h-10 rounded-full bg-white/5 border border-white/10 text-white transition-all active:scale-90"
-            style={{ marginLeft: '0.5rem' }}
-          >
-            {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
+          {/* Hamburger Toggle - ONLY ON MOBILE */}
+          {isMobile && (
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '50%',
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: 'var(--white)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginLeft: '0.5rem',
+                cursor: 'none'
+              }}
+            >
+              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          )}
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay */}
+      {/* Ultra-Brutal Mobile Menu Overlay */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed inset-0 z-[90] md:hidden flex flex-col items-center justify-center bg-[#060010] backdrop-blur-3xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 500,
+              background: '#06000a',
+              display: 'flex',
+              flexDirection: 'column',
+              padding: '2rem',
+              overflow: 'hidden'
+            }}
           >
-            <div className="flex flex-col items-center gap-8 p-10">
-              <Link 
-                href="/" 
-                onClick={() => setIsMenuOpen(false)}
-                className="text-4xl font-display tracking-widest text-white mb-10"
-              >
-                ARC<span className="text-[var(--electric)]">I</span>GY
-              </Link>
-              
-              <a
-                href="mailto:hello@arcigy.group"
-                onClick={() => setIsMenuOpen(false)}
-                className="font-mono text-2xl tracking-[0.2em] text-white uppercase hover:text-[var(--electric)]"
-              >
-                Kontakt
-              </a>
+            {/* Corner Glow Overlay */}
+            <div style={{
+              position: 'absolute',
+              bottom: '-20%',
+              right: '-10%',
+              width: '80vw',
+              height: '80vw',
+              background: 'radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%)',
+              pointerEvents: 'none',
+              zIndex: 0
+            }} />
 
-              <button
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  setIsVideoOpen(true);
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 1, marginBottom: '6rem' }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', letterSpacing: '0.2em' }}>
+                ARC<span style={{ color: 'var(--electric)' }}>I</span>GY
+              </div>
+              <button 
+                onClick={() => setIsMenuOpen(false)}
+                style={{
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '50%',
+                  color: 'var(--white)',
+                  width: '56px',
+                  height: '56px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'none'
                 }}
-                className="flex items-center gap-4 font-mono text-2xl tracking-[0.2em] text-white uppercase hover:text-[var(--electric)]"
               >
-                <span className="w-2 h-2 bg-[var(--electric)] rounded-full shadow-[0_0_10px_var(--glow-electric)]"></span>
-                Ukážka
+                <X size={28} />
               </button>
+            </div>
 
-              <Link
-                href="/audit"
-                onClick={() => setIsMenuOpen(false)}
-                className="mt-12 font-mono text-xl tracking-[0.2em] text-[#060010] bg-[var(--electric)] uppercase font-bold px-12 py-6 rounded-full shadow-[0_0_40px_rgba(124,58,237,0.4)]"
-              >
-                REZERVOVAŤ CALL
-              </Link>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', zIndex: 1, marginTop: 'auto' }}>
+               {[
+                 { label: 'DOMOV', href: '/' },
+                 { label: 'UKÁŽKA', onClick: () => { setIsMenuOpen(false); setIsVideoOpen(true); } },
+                 { label: 'KONTAKT', href: 'mailto:hello@arcigy.group' }
+               ].map((item, idx) => (
+                 <motion.div
+                   key={idx}
+                   initial={{ y: 80, opacity: 0, rotateX: -45 }}
+                   animate={{ y: 0, opacity: 1, rotateX: 0 }}
+                   transition={{ delay: 0.1 * idx, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                   style={{ perspective: '1000px' }}
+                 >
+                   {item.href ? (
+                     <Link
+                       href={item.href}
+                       onClick={() => setIsMenuOpen(false)}
+                       style={{
+                         fontFamily: 'var(--font-display)',
+                         fontSize: '15vw',
+                         lineHeight: 1,
+                         letterSpacing: '-0.02em',
+                         color: 'var(--white)',
+                         textDecoration: 'none',
+                         display: 'block',
+                         textTransform: 'uppercase'
+                       }}
+                     >
+                       {item.label}
+                     </Link>
+                   ) : (
+                     <button
+                       onClick={item.onClick}
+                       style={{
+                         fontFamily: 'var(--font-display)',
+                         fontSize: '15vw',
+                         lineHeight: 1,
+                         letterSpacing: '-0.02em',
+                         color: 'var(--white)',
+                         background: 'none',
+                         border: 'none',
+                         padding: 0,
+                         textAlign: 'left',
+                         width: '100%',
+                         textTransform: 'uppercase'
+                       }}
+                     >
+                       {item.label}
+                     </button>
+                   )}
+                 </motion.div>
+               ))}
+               
+               <motion.div
+                  initial={{ y: 50, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.5, duration: 0.8 }}
+                  style={{ marginTop: '4rem', marginBottom: '2rem' }}
+               >
+                  <Link
+                    href="/audit"
+                    onClick={() => setIsMenuOpen(false)}
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.9rem',
+                      color: 'var(--bg)',
+                      background: 'var(--electric)',
+                      padding: '1.25rem 2.5rem',
+                      borderRadius: '100px',
+                      textDecoration: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 800,
+                      letterSpacing: '0.15em',
+                      width: '100%',
+                      boxShadow: '0 0 30px var(--glow-electric)'
+                    }}
+                  >
+                    REZERVOVAŤ KONZULTÁCIU
+                  </Link>
+               </motion.div>
+            </div>
+            
+            {/* Bottom Accent */}
+            <div style={{
+              position: 'absolute',
+              bottom: '5%',
+              left: '2rem',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.6rem',
+              opacity: 0.3,
+              letterSpacing: '0.3em',
+              textTransform: 'uppercase'
+            }}>
+              Artificial Agency • 2024
             </div>
           </motion.div>
         )}
