@@ -30,6 +30,13 @@ export default function Nav() {
     setIsAutoTriggered(false);
   };
 
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   const runDemoSequence = useCallback(async () => {
     setIsDemoActive(true);
     router.replace(pathname, { scroll: false }); 
@@ -104,14 +111,16 @@ export default function Nav() {
         {/* Desktop Links (>= 1024px) */}
         {!isMobile && (
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            <a
-              href="mailto:hello@arcigy.group"
+            <button
+              onClick={() => scrollToSection('about')}
               style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.7rem',
                 letterSpacing: '0.15em',
                 color: 'var(--white)',
-                textDecoration: 'none',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'none',
                 padding: '0.75rem 1.5rem',
                 borderRadius: '50px',
                 transition: 'background 0.3s ease',
@@ -125,7 +134,7 @@ export default function Nav() {
               }}
             >
               Kontakt
-            </a>
+            </button>
 
             <button
               id="nav-demo-trigger"
@@ -278,7 +287,7 @@ export default function Nav() {
                {[
                  { label: 'DOMOV', href: '/' },
                  { label: 'UKÁŽKA', onClick: () => { setIsMenuOpen(false); setIsVideoOpen(true); } },
-                 { label: 'KONTAKT', href: 'mailto:hello@arcigy.group' }
+                 { label: 'KONTAKT', onClick: () => { setIsMenuOpen(false); setTimeout(() => scrollToSection('about'), 100); } }
                ].map((item, idx) => (
                  <motion.div
                    key={idx}
