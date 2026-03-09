@@ -3,19 +3,28 @@
 import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useEffect, useCallback } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import VideoModal from './VideoModal';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Nav() {
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [isAutoTriggered, setIsAutoTriggered] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDemoActive, setIsDemoActive] = useState(false);
   const [demoCursorPos, setDemoCursorPos] = useState({ x: 0, y: 0 });
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleCloseModal = () => {
+    setIsVideoOpen(false);
+    setIsAutoTriggered(false);
+  };
 
   const runDemoSequence = useCallback(async () => {
     setIsDemoActive(true);
+    router.replace(pathname, { scroll: false }); // Clean up URL immediately
     document.body.style.pointerEvents = 'none';
     document.body.style.overflow = 'hidden';
 
@@ -30,16 +39,18 @@ export default function Nav() {
       setDemoCursorPos({ x: targetX, y: targetY });
       await new Promise(r => setTimeout(r, 1200));
       
+      setIsAutoTriggered(true);
       setIsVideoOpen(true);
       setIsDemoActive(false);
     }
 
     document.body.style.pointerEvents = 'auto';
     document.body.style.overflow = 'auto';
-  }, []);
+  }, [pathname, router]);
 
   useEffect(() => {
     if (searchParams.get('demo') === 'active') {
+      // Set state to trigger sequence
       const timer = setTimeout(() => {
         runDemoSequence();
       }, 100);
@@ -154,7 +165,8 @@ export default function Nav() {
 
       <VideoModal 
         isOpen={isVideoOpen} 
-        onClose={() => setIsVideoOpen(false)} 
+        onClose={handleCloseModal} 
+        isAutoTriggered={isAutoTriggered}
         videoSrc="https://pub-940e42d6aeea403e9c1c9e8d91684329.r2.dev/Timeline%201.mp4"
       />
 

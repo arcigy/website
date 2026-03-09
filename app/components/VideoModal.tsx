@@ -3,22 +3,25 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Maximize, Minimize, Play, Pause, Volume2, VolumeX } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
 
 interface VideoModalProps {
   isOpen: boolean;
   onClose: () => void;
   videoSrc: string;
+  isAutoTriggered?: boolean;
 }
 
-export default function VideoModal({ isOpen, onClose, videoSrc }: VideoModalProps) {
+export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered = false }: VideoModalProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  
+  const [hasStarted, setHasStarted] = useState(false);
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -32,8 +35,7 @@ export default function VideoModal({ isOpen, onClose, videoSrc }: VideoModalProp
     setMounted(true);
   }, []);
 
-  const searchParams = useSearchParams();
-  const isDemoMode = searchParams.get('demo') === 'active';
+
 
   const startAutoplay = useCallback(() => {
     // Wait 1.2s for a more "pro" dramatic entrance (black screen first)
@@ -60,24 +62,28 @@ export default function VideoModal({ isOpen, onClose, videoSrc }: VideoModalProp
   useEffect(() => {
     if (isOpen) {
       if (videoRef.current) {
-        // Initial state before starting
         videoRef.current.currentTime = 0;
         videoRef.current.pause(); 
         
-        // Wrap in timeout to avoid "setState during render" warning
         setTimeout(() => {
           setIsPlaying(false);
+          setHasStarted(false); // Reset on open
           
-          // Autoplay on open (dramatic entrance)
-          startAutoplay();
+          // Only autoplay if NOT system-triggered (to protect audio)
+          if (!isAutoTriggered) {
+             startAutoplay();
+             setHasStarted(true);
+          }
         }, 50);
       }
     } else {
       if (startTimeoutRef.current) clearTimeout(startTimeoutRef.current);
       if (videoRef.current) {
         videoRef.current.pause();
-        // Delaying state update slightly to avoid the same warning on close
-        setTimeout(() => setIsPlaying(false), 50);
+        setTimeout(() => {
+           setIsPlaying(false);
+           setHasStarted(false);
+        }, 50);
       }
       
       if (document.fullscreenElement) {
@@ -85,7 +91,7 @@ export default function VideoModal({ isOpen, onClose, videoSrc }: VideoModalProp
       }
       setTimeout(() => setIsFullscreen(false), 50);
     }
-  }, [isOpen, isDemoMode, startAutoplay]);
+  }, [isOpen, isAutoTriggered, startAutoplay]);
 
   useEffect(() => {
     const cursorEl = document.querySelector('.cursor');
@@ -307,6 +313,7 @@ export default function VideoModal({ isOpen, onClose, videoSrc }: VideoModalProp
               ref={videoRef}
               src={videoSrc}
               playsInline
+              preload="auto"
               onEnded={handleVideoEnd}
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
@@ -315,10 +322,48 @@ export default function VideoModal({ isOpen, onClose, videoSrc }: VideoModalProp
               style={{
                 width: '100%',
                 height: '100%',
-                objectFit: 'contain', // Ensures the whole video is visible without cropping
+                objectFit: 'contain',
                 outline: 'none',
+                willChange: 'transform' // Performance optimization
               }}
             />
+
+            {/* START OVERLAY for Demo Mode */}
+            <AnimatePresence>
+              {isAutoTriggered && !hasStarted && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                    <motion.button
+                      initial={{ scale: 0.9 }}
+                      animate={{ scale: 1 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        if (videoRef.current) {
+                           videoRef.current.muted = false;
+                           setIsMuted(false);
+                           videoRef.current.play();
+                           setHasStarted(true);
+                           setIsPlaying(true);
+                        }
+                      }}
+                      className="group relative flex flex-col items-center gap-6"
+                    >
+                        <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-[var(--electric)] flex items-center justify-center shadow-[0_0_50px_rgba(124,58,237,0.6)] transition-all group-hover:shadow-[0_0_80px_rgba(124,58,237,0.8)]">
+                           <Play size={40} className="text-[#060010] ml-2" fill="currentColor" />
+                        </div>
+                        <span className="font-display text-xl md:text-2xl tracking-[0.2em] text-white uppercase opacity-80 group-hover:opacity-100 transition-opacity">
+                            Spustiť skúsenosť
+                        </span>
+                    </motion.button>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Huge Play button overlay when paused */}
             <AnimatePresence>
