@@ -21,7 +21,6 @@ export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered 
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   
-  const [hasStarted, setHasStarted] = useState(false);
   const [isReady, setIsReady] = useState(false);
   
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -62,29 +61,22 @@ export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered 
   useEffect(() => {
     if (isOpen) {
       if (videoRef.current) {
-        // Reset state but check if already loaded
-        setIsPlaying(false);
-        setHasStarted(false);
-        
-        // If already loaded (e.g. from background preloader), mark as ready immediately
-        if (videoRef.current.readyState >= 3) {
-          setIsReady(true);
-        } else {
-          setIsReady(false);
-        }
-
         videoRef.current.currentTime = 0;
         videoRef.current.pause(); 
         
         setTimeout(() => {
-          // Double check readyState after a beat
-          if (videoRef.current && videoRef.current.readyState >= 2) {
+          setIsPlaying(false);
+          
+          if (videoRef.current && videoRef.current.readyState >= 3) {
+            setIsReady(true);
+          } else if (videoRef.current && videoRef.current.readyState >= 2) {
              setIsReady(true);
+          } else {
+             setIsReady(false);
           }
 
           if (!isAutoTriggered) {
              startAutoplay();
-             setHasStarted(true);
           }
         }, 100);
       }
@@ -94,7 +86,6 @@ export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered 
         videoRef.current.pause();
         setTimeout(() => {
            setIsPlaying(false);
-           setHasStarted(false);
            setIsReady(false);
         }, 50);
       }
@@ -390,42 +381,7 @@ export default function VideoModal({ isOpen, onClose, videoSrc, isAutoTriggered 
               )}
             </AnimatePresence>
 
-            {/* START OVERLAY for Demo Mode */}
-            <AnimatePresence>
-              {isAutoTriggered && !hasStarted && isReady && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                    <motion.button
-                      initial={{ scale: 0.9 }}
-                      animate={{ scale: 1 }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => {
-                        if (videoRef.current) {
-                           videoRef.current.muted = false;
-                           setIsMuted(false);
-                           videoRef.current.play();
-                           setHasStarted(true);
-                           setIsPlaying(true);
-                        }
-                      }}
-                      className="group relative flex flex-col items-center gap-6"
-                    >
-                        <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-[var(--electric)] flex items-center justify-center shadow-[0_0_50px_rgba(124,58,237,0.6)] transition-all group-hover:shadow-[0_0_80px_rgba(124,58,237,0.8)]">
-                           <Play size={40} className="text-[#060010] ml-2" fill="currentColor" />
-                        </div>
-                        <span className="font-display text-xl md:text-2xl tracking-[0.2em] text-white uppercase opacity-80 group-hover:opacity-100 transition-opacity">
-                            Spustiť skúsenosť
-                        </span>
-                    </motion.button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+
 
             {/* Huge Play button overlay when paused */}
             <AnimatePresence>
