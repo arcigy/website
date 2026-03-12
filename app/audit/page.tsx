@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import BookingSystem from '../components/BookingSystem';
 
 
@@ -9,16 +10,22 @@ const ShaderBackground = dynamic(() => import('../components/ShaderBackground'),
 const CustomCursor = dynamic(() => import('../components/CustomCursor'), { ssr: false });
 
 export default function AuditPage() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
     <div 
       style={{
-        height: '100vh',
+        minHeight: '100vh',
         width: '100%',
-        overflow: 'hidden',
         position: 'relative',
         backgroundColor: 'var(--bg)',
         color: 'var(--white)',
         fontFamily: 'var(--font-display)',
+        overflowX: 'hidden',
       }}
     >
       <ShaderBackground />
@@ -31,10 +38,11 @@ export default function AuditPage() {
           left: 0,
           right: 0,
           zIndex: 50,
-          padding: 'clamp(1.5rem, 5vw, 2.5rem)',
+          padding: 'clamp(1rem, 5vw, 2.5rem)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          background: 'linear-gradient(to bottom, var(--bg) 0%, transparent 100%)',
           pointerEvents: 'none',
         }}
       >
@@ -70,14 +78,20 @@ export default function AuditPage() {
           ZAVRIEŤ ✕
         </Link>
       </nav>
-
+ 
       <main 
         style={{
           position: 'relative',
           zIndex: 10,
-          height: '100vh',
+          minHeight: '100vh',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
+          justifyContent: 'flex-start',
+          padding: 'clamp(6rem, 12vh, 12rem) 0 4rem 0',
+          width: '100%',
+          opacity: isMounted ? 1 : 0,
+          transition: 'opacity 0.6s ease'
         }}
       >
         <BookingSystem />

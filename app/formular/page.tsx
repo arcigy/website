@@ -391,16 +391,19 @@ export default function Formular() {
           </div>
         </div>
 
-        <div style={{ 
-          position: 'relative', 
-          width: '100%', 
-          display: 'flex', 
-          alignItems: 'flex-start', 
-          justifyContent: 'center',
-          perspective: '1200px',
-          padding: '2rem 0',
-          minHeight: '600px' // Minimum height to prevent collapse during transition
-        }}>
+        <div
+          style={{ 
+            position: 'relative', 
+            width: '100%', 
+            display: 'flex', 
+            alignItems: 'flex-start', 
+            justifyContent: 'center',
+            perspective: '1200px',
+            padding: '2rem 0',
+            minHeight: 'clamp(500px, 80vh, 700px)', // Improved height-handling
+            overflow: 'hidden' // Contain transitions
+          }}
+        >
           <AnimatePresence mode="popLayout">
             {steps.map((step, idx) => {
               // Calculate positional offset
@@ -414,7 +417,9 @@ export default function Formular() {
               const isCenter = offset === 0;
               const isLeft = offset < 0;
               
-              const xPos = isCenter ? '0%' : isLeft ? '-120%' : '120%'; 
+              // Mobile-safe positioning
+              const horizontalOffset = typeof window !== 'undefined' && window.innerWidth < 768 ? '100%' : '120%';
+              const xPos = isCenter ? '0%' : isLeft ? `-${horizontalOffset}` : horizontalOffset; 
               const scale = isCenter ? 1 : 0.85; 
               const opacity = isCenter ? 1 : 0.25; 
               const zIndex = isCenter ? 50 : 10;
@@ -454,7 +459,7 @@ export default function Formular() {
                 >
                   <h2 style={{ 
                     fontFamily: 'var(--font-display)', 
-                    fontSize: '4.5rem', 
+                    fontSize: 'clamp(2.5rem, 8vw, 4.5rem)', 
                     lineHeight: 0.9,
                     letterSpacing: '1px',
                     textTransform: 'uppercase',

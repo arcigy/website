@@ -74,7 +74,7 @@ export default function Hero() {
               className="hero-line"
               style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(3.5rem, 10vw, 10rem)',
+                fontSize: 'clamp(3rem, 10vw, 10rem)',
                 lineHeight: 0.88,
                 letterSpacing: '-0.02em',
                 color: 'var(--white)',
@@ -86,7 +86,7 @@ export default function Hero() {
               className="hero-line"
               style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(3.5rem, 10vw, 10rem)',
+                fontSize: 'clamp(3rem, 10vw, 10rem)',
                 lineHeight: 0.88,
                 letterSpacing: '-0.02em',
                 color: 'var(--white)',
@@ -96,7 +96,7 @@ export default function Hero() {
               <span
                 style={{
                   color: 'transparent',
-                  WebkitTextStroke: '2px var(--electric)',
+                  WebkitTextStroke: '1.5px var(--electric)',
                 }}
               >
                 AI
@@ -114,15 +114,16 @@ export default function Hero() {
             gap: '3rem',
             flexWrap: 'wrap',
           }}
+          className="hero-bottom-row"
         >
           <p
             ref={subRef}
             style={{
               fontFamily: 'var(--font-body)',
-              fontSize: 'clamp(1.05rem, 1.5vw, 1.3rem)',
+              fontSize: 'clamp(1rem, 1.5vw, 1.3rem)',
               color: 'var(--muted)',
               maxWidth: '42ch',
-              lineHeight: 1.65,
+              lineHeight: 1.6,
               fontWeight: 400,
             }}
           >
@@ -138,6 +139,7 @@ export default function Hero() {
               gap: '1.25rem',
               alignItems: 'flex-start',
             }}
+            className="hero-cta-container"
           >
             <Link href="/audit" className="btn-primary" id="hero-cta">
               <span>Zarezervovať úvodný call</span>

@@ -48,8 +48,10 @@ export default function Stats() {
           maxWidth: '1400px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '2rem',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: '1px',
+          background: 'rgba(255,255,255,0.05)',
+          marginBottom: '4rem',
         }}
       >
         {STATS.map((stat, i) => (

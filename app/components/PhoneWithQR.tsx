@@ -66,7 +66,6 @@ export default function PhoneWithQR({ phone, label }: PhoneWithQRProps) {
           color: 'var(--dim)',
           textDecoration: 'none',
           transition: 'color 0.3s ease',
-          cursor: 'none',
           display: 'block',
           padding: '2px 0'
         }}

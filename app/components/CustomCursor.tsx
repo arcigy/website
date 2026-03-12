@@ -13,6 +13,13 @@ export default function CustomCursor() {
     const ring = ringRef.current;
     if (!cursor || !dot || !ring) return;
 
+    // Disable custom cursor on touch devices
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (isTouch) {
+      cursor.style.display = 'none';
+      return;
+    }
+
     let mouseX = 0;
     let mouseY = 0;
     let ringX = 0;
@@ -85,8 +92,10 @@ export default function CustomCursor() {
       );
       
       interactives.forEach((el) => {
-        // Enforce cursor hiding
-        (el as HTMLElement).style.cursor = 'none';
+        // Enforce cleanup before re-adding
+        el.removeEventListener('mouseenter', onEnterMagnetic as EventListener);
+        el.removeEventListener('mousemove', onMoveMagnetic as EventListener);
+        el.removeEventListener('mouseleave', onLeaveMagnetic as EventListener);
 
         // Add listeners
         el.addEventListener('mouseenter', onEnterMagnetic as EventListener);
@@ -95,14 +104,38 @@ export default function CustomCursor() {
       });
     };
 
+    const resetCursor = () => {
+      isHoveringMagnetic = false;
+      cursor.classList.remove('cursor-active');
+      cursor.classList.remove('cursor-hide');
+      cursor.classList.remove('cursor-force-hidden');
+    };
+
     updateInteractives();
     window.addEventListener('mousemove', onMove);
+    window.addEventListener('cursor-reset', resetCursor);
 
-    const observer = new MutationObserver(updateInteractives);
+    const observer = new MutationObserver(() => {
+      updateInteractives();
+      // If the current hovered element is gone, reset
+      if (isHoveringMagnetic) {
+         resetCursor();
+      }
+    });
+
+    // Safety fallback: if we are in a hidden state, periodically check
+    const safetyTimer = setInterval(() => {
+      if (!isHoveringMagnetic && cursor.classList.contains('cursor-hide')) {
+        cursor.classList.remove('cursor-hide');
+      }
+    }, 1000);
+    
     observer.observe(document.body, { childList: true, subtree: true });
 
     return () => {
       window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('cursor-reset', resetCursor);
+      clearInterval(safetyTimer);
       cancelAnimationFrame(raf);
       observer.disconnect();
     };

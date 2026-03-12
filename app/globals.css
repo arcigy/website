@@ -36,9 +36,11 @@ html {
   overflow-x: hidden;
 }
 
-/* Hide default cursor on EVERYTHING */
-* {
-  cursor: none !important;
+/* Hide default cursor on EVERYTHING only if we have a mouse */
+@media (pointer: fine) {
+  * {
+    cursor: none !important;
+  }
 }
 
 [role="button"], 
@@ -286,7 +288,6 @@ body::before {
   background: var(--electric);
   padding: 1rem 2rem;
   border: none;
-  cursor: none;
   position: relative;
   overflow: hidden;
   text-decoration: none;
@@ -327,7 +328,6 @@ body::before {
   background: transparent;
   padding: 1rem 2rem;
   border: 1px solid var(--border-bright);
-  cursor: none;
   position: relative;
   overflow: hidden;
   text-decoration: none;
@@ -407,7 +407,6 @@ body::before {
   padding: 0.75rem 0;
   outline: none;
   transition: border-color 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  cursor: none;
   resize: none;
 }
 
@@ -667,4 +666,87 @@ body::before {
   background: var(--electric);
   border-radius: 50%;
   animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* --- NAVIGATION CLASSES (Fixing Hydration) --- */
+.nav-logo-link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  letter-spacing: 0.15em;
+  color: var(--white);
+  font-weight: 700;
+}
+
+.nav-item-btn {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: var(--white);
+  background: transparent;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  transition: background 0.3s ease;
+  text-transform: uppercase;
+}
+
+.nav-cta-btn {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: var(--bg);
+  background: var(--electric);
+  text-decoration: none;
+  padding: 0.75rem 2rem;
+  border-radius: 100px;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), background 0.3s ease, box-shadow 0.3s ease;
+  display: inline-block;
+}
+
+.nav-container {
+  position: fixed;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  padding: 0.75rem 0.75rem 0.75rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(2rem, 4vw, 4rem);
+  background: rgba(6, 0, 10, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-bright);
+  border-radius: 100px;
+  width: auto;
+  min-width: max-content;
+}
+@media (max-width: 768px) {
+  .hero-bottom-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    gap: 2rem !important;
+  }
+  
+  .hero-cta-container {
+    width: 100% !important;
+  }
+  
+  .hero-cta-container > a {
+    width: 100% !important;
+    text-align: center !important;
+  }
+}
+@media (max-width: 400px) {
+  .nav-container {
+    padding: 0.5rem 0.5rem 0.5rem 1rem !important;
+    gap: 1rem !important;
+  }
 }

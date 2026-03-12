@@ -18,14 +18,13 @@ export default function BookingSystem() {
         width: '100%',
         maxWidth: '1600px',
         margin: '0 auto',
-        padding: '0 clamp(2rem, 5vw, 6rem)',
+        padding: '0 clamp(1rem, 5vw, 6rem)',
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        gap: '2rem',
-        height: '100%',
+        alignItems: 'flex-start',
+        gap: 'clamp(2rem, 5vw, 6rem)',
       }}
     >
       {/* LEFT COLUMN - BRANDING & COPY */}
@@ -133,11 +132,11 @@ export default function BookingSystem() {
         transition={{ duration: 0.8, delay: 0.2, ease: [0.23, 1, 0.32, 1] }}
         style={{
           flex: '1 1 50%',
-          minWidth: '320px',
+          minWidth: 'min(100%, 320px)',
           position: 'relative',
-          height: '80vh',
-          maxHeight: '740px',
-          marginTop: '0',
+          height: 'clamp(600px, 85vh, 740px)',
+          width: '100%',
+          marginTop: '2rem'
         }}
       >
         {/* Brutalist Glows */}
@@ -165,8 +164,8 @@ export default function BookingSystem() {
             display: 'flex',
             flexDirection: 'column',
             borderRadius: '16px',
-            border: '1px solid rgba(255,255,255,0.08)',
-            backgroundColor: 'rgba(13, 0, 21, 0.8)',
+            border: '1px solid rgba(168, 85, 247, 0.2)',
+            backgroundColor: 'rgba(6, 0, 10, 0.8)',
             backdropFilter: 'blur(24px)',
             WebkitBackdropFilter: 'blur(24px)',
             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(168, 85, 247, 0.1)',

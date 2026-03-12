@@ -77,7 +77,6 @@ function ProblemAccordionItem({
             borderRadius: '50%',
             background: 'transparent',
             border: 'none',
-            cursor: 'none',
             flexShrink: 0,
             outline: 'none',
             WebkitTapHighlightColor: 'transparent',
@@ -171,7 +170,7 @@ export default function Problem() {
           <h2
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
+              fontSize: 'clamp(2.2rem, 5vw, 4.5rem)',
               lineHeight: 0.95,
               letterSpacing: '-0.01em',
             }}

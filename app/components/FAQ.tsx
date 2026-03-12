@@ -77,7 +77,6 @@ function FAQItem({ item }: { item: (typeof FAQS)[0] }) {
             borderRadius: '50%',
             background: 'transparent',
             border: 'none',
-            cursor: 'none',
             flexShrink: 0,
             outline: 'none',
             WebkitTapHighlightColor: 'transparent',

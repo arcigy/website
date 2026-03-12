@@ -91,7 +91,7 @@ export default function AboutUs() {
           className="about-headline"
           style={{
             fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(3.5rem, 9vw, 9rem)',
+            fontSize: 'clamp(3rem, 9vw, 9rem)',
             lineHeight: 0.88,
             letterSpacing: '-0.03em',
             color: 'var(--white)',
@@ -103,7 +103,7 @@ export default function AboutUs() {
           <span
             style={{
               color: 'transparent',
-              WebkitTextStroke: '2px var(--electric)',
+              WebkitTextStroke: '1.5px var(--electric)',
             }}
           >
             STOJÍ

@@ -34,11 +34,13 @@ export default function CookieConsent() {
     }
     // Reload or trigger a custom event
     window.dispatchEvent(new Event('cookieConsentUpdate'));
+    window.dispatchEvent(new Event('cursor-reset'));
   };
 
   const handleDecline = () => {
     localStorage.setItem('cookieConsent', 'declined');
     setIsVisible(false);
+    window.dispatchEvent(new Event('cursor-reset'));
   };
 
   if (!isVisible) return null;

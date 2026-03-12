@@ -14,16 +14,22 @@ export default function Nav() {
   const [isDemoActive, setIsDemoActive] = useState(false);
   const [demoCursorPos, setDemoCursorPos] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [isMounted]);
 
   const handleCloseModal = () => {
     setIsVideoOpen(false);
@@ -91,58 +97,20 @@ export default function Nav() {
 
   return (
     <>
-      <nav
-        className="nav-container"
-        style={{
-          position: 'fixed',
-          bottom: '2.5rem',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 100,
-          padding: '0.75rem 0.75rem 0.75rem 2rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 'clamp(2rem, 4vw, 4rem)',
-          background: 'rgba(6, 0, 10, 0.8)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid var(--border-bright)',
-          borderRadius: '100px',
-          width: 'auto',
-          minWidth: 'max-content'
-        }}
-      >
-        <Link href="/" className="nav-logo" style={{ 
-          textDecoration: 'none', 
-          display: 'flex', 
-          alignItems: 'center',
-          fontFamily: 'var(--font-display)',
-          fontSize: 'clamp(1.2rem, 2vw, 1.5rem)',
-          letterSpacing: '0.15em',
-          color: 'var(--white)',
-          fontWeight: 700
-        }}>
+      <nav className="nav-container">
+        <Link 
+          href="/" 
+          className="nav-logo-link"
+        >
           ARC<span style={{ color: 'var(--electric)' }}>I</span>GY
         </Link>
 
         {/* Desktop Links (>= 1024px) */}
-        {!isMobile && (
+        {isMounted && !isMobile && (
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
             <button
               onClick={() => scrollToSection('about')}
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.7rem',
-                letterSpacing: '0.15em',
-                color: 'var(--white)',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'none',
-                padding: '0.75rem 1.5rem',
-                borderRadius: '50px',
-                transition: 'background 0.3s ease',
-                textTransform: 'uppercase',
-              }}
+              className="nav-item-btn"
               onMouseEnter={(e: React.MouseEvent) => {
                 (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)';
               }}
@@ -156,18 +124,8 @@ export default function Nav() {
             <button
               id="nav-demo-trigger"
               onClick={() => setIsVideoOpen(true)}
+              className="nav-item-btn"
               style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.7rem',
-                letterSpacing: '0.15em',
-                color: 'var(--white)',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'none',
-                padding: '0.75rem 1.5rem',
-                borderRadius: '50px',
-                transition: 'background 0.3s ease',
-                textTransform: 'uppercase',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.5rem'
@@ -194,20 +152,7 @@ export default function Nav() {
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
           <Link
             href="/audit"
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.7rem',
-              letterSpacing: '0.15em',
-              color: 'var(--bg)',
-              background: 'var(--electric)',
-              textDecoration: 'none',
-              padding: '0.75rem 2rem',
-              borderRadius: '100px',
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              transition: 'transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), background 0.3s ease, box-shadow 0.3s ease',
-              display: 'inline-block'
-            }}
+            className="nav-cta-btn"
             onMouseEnter={(e: React.MouseEvent) => {
               (e.currentTarget as HTMLElement).style.transform = 'scale(1.02)';
               (e.currentTarget as HTMLElement).style.background = 'var(--neon)';
@@ -220,11 +165,11 @@ export default function Nav() {
             }}
             id="nav-cta"
           >
-            {isMobile ? 'REZERVOVAŤ CALL' : '15-MINÚTOVÝ CALL'}
+            {isMounted && isMobile ? 'REZERVOVAŤ CALL' : '15-MINÚTOVÝ CALL'}
           </Link>
           
           {/* Hamburger Toggle - ONLY ON MOBILE */}
-          {isMobile && (
+          {isMounted && isMobile && (
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               style={{
@@ -238,7 +183,6 @@ export default function Nav() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginLeft: '0.5rem',
-                cursor: 'none'
               }}
             >
               {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -293,7 +237,6 @@ export default function Nav() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  cursor: 'none'
                 }}
               >
                 <X size={28} />

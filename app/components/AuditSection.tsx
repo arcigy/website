@@ -106,7 +106,7 @@ export default function AuditSection() {
           <h2
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(3rem, 7vw, 6rem)',
+              fontSize: 'clamp(2.5rem, 7vw, 6rem)',
               lineHeight: 0.9,
               letterSpacing: '-0.02em',
               marginBottom: '2rem',
@@ -131,7 +131,7 @@ export default function AuditSection() {
           className="deliverables-grid"
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
             gap: '1px',
             background: 'rgba(255,255,255,0.05)',
             marginBottom: '4rem',
@@ -230,7 +230,7 @@ export default function AuditSection() {
             className="outputs-grid"
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
               gap: '2.5rem',
               marginBottom: '6rem',
               position: 'relative'
