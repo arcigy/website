@@ -8,7 +8,7 @@ datasource db {
 }
 
 model AuditSubmission {
-  id                 String   @id
+  id                 String   @id @default(cuid())
   createdAt          DateTime @default(now())
   name               String?
   email              String?
@@ -969,3 +969,4 @@ model spatial_ref_sys {
   srtext    String? @db.VarChar(2048)
   proj4text String? @db.VarChar(2048)
 }
+
