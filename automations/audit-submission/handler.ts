@@ -65,6 +65,7 @@ export async function handler(
     });
 
     // 2. Send Emails
+    console.log('RESEND_API_KEY present:', !!process.env.RESEND_API_KEY);
     if (process.env.RESEND_API_KEY) {
       // Generate summary table only for provided fields
       const rows = Object.entries(input)
@@ -79,8 +80,9 @@ export async function handler(
       const tableHtml = `<table style="width: 100%; border: 1px solid #eee; border-collapse: collapse;">${rows}</table>`;
 
       try {
+        console.log('Attempting to send internal notification email...');
         // Internal notification
-        await resend.emails.send({
+        const internalRes = await resend.emails.send({
           from: 'System <notifier@arcigy.group>',
           to: ['branislav.laubert@gmail.com', 'hello@arcigy.group'],
           subject: `🚨 NOVÝ DOPYT (${input.name}): ${input.company || (input.website ? 'Web' : 'Neznámy')}`,
@@ -95,9 +97,11 @@ export async function handler(
             </div>
           `,
         });
+        console.log('Internal email response:', internalRes);
 
+        console.log('Attempting to send client confirmation email...');
         // Client confirmation
-        await resend.emails.send({
+        const clientRes = await resend.emails.send({
           from: 'Arcigy Audit <audit@arcigy.group>',
           to: input.email,
           subject: 'Vaša žiadosť o AI Audit bola prijatá',
@@ -111,9 +115,12 @@ export async function handler(
             </div>
           `,
         });
+        console.log('Client email response:', clientRes);
       } catch (e) {
-        console.error('Email sending error:', e);
+        console.error('Email sending exception:', e);
       }
+    } else {
+      console.error('RESEND_API_KEY is not defined, skipping emails.');
     }
 
     return {

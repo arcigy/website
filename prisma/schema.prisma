@@ -7,6 +7,45 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model AuditSubmission {
+  id                 String   @id
+  createdAt          DateTime @default(now())
+  name               String?
+  email              String?
+  phone              String?
+  company            String?
+  website            String?
+  industry           String?
+  teamSize           String?
+  whatYouSell        String?
+  typicalCustomer    String?
+  customerSource     String?
+  founderTasks       String?
+  magicWand          String?
+  marketingChallenge String?
+  salesTeam          String?
+  salesChallenge     String?
+  deliveryBottleneck String?
+  recurringProblem   String?
+  supportHeadaches   String?
+  aiExperience       String?
+  aiToolsUsed        String?
+  successDefinition  String?
+  specificFocus      String?
+  processes          String[]
+  topTool            String?
+  acquisition        String?
+  salesProcess       String?
+  marketingTeam      String?
+  primaryChannel     String?
+  crmSystem          String?
+  adminTasks         String?
+  automatedTasks     String?
+  supportProcess     String?
+  expectations       String?
+  priorities         String?
+}
+
 model activities {
   id            Int       @id @default(autoincrement())
   type          String?   @db.VarChar(50)
@@ -929,43 +968,4 @@ model spatial_ref_sys {
   auth_srid Int?
   srtext    String? @db.VarChar(2048)
   proj4text String? @db.VarChar(2048)
-}
-
-model AuditSubmission {
-  id              String   @id @default(cuid())
-  createdAt       DateTime @default(now())
-  name            String?
-  email           String?
-  phone           String?
-  company         String?
-  website         String?
-  industry        String?
-  teamSize        String?
-  whatYouSell        String?
-  typicalCustomer    String?
-  customerSource     String?
-  founderTasks       String?
-  magicWand          String?
-  marketingChallenge String?
-  salesTeam          String?
-  salesChallenge     String?
-  deliveryBottleneck String?
-  recurringProblem   String?
-  supportHeadaches   String?
-  aiExperience       String?
-  aiToolsUsed        String?
-  successDefinition  String?
-  specificFocus      String?
-  processes          String[]
-  topTool            String?
-  acquisition        String?
-  salesProcess       String?
-  marketingTeam      String?
-  primaryChannel     String?
-  crmSystem          String?
-  adminTasks         String?
-  automatedTasks     String?
-  supportProcess     String?
-  expectations       String?
-  priorities         String?
 }
