@@ -7,42 +7,46 @@ datasource db {
 }
 
 model AuditSubmission {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
+  id              String   @id @default(cuid())
+  createdAt       DateTime @default(now())
   
-  // Základné údaje
-  name      String
-  email     String
-  phone     String
-  company   String
-  industry  String
-  teamSize  String
-  
-  // Detaily o biznise
-  whatYouSell      String?
-  typicalCustomer  String?
-  customerSource   String?
-  
-  // Čas a úlohy
-  founderTasks     String?
-  magicWand        String?
-  
-  // Marketing a Predaj
-  marketingChallenge String?
-  salesTeam          String?
-  salesChallenge     String?
-  
-  // Operatíva a Podpora
-  deliveryBottleneck String?
-  recurringProblem   String?
-  supportHeadaches   String?
-  
-  // AI Očakávania
-  aiExperience      String?
-  aiToolsUsed       String?
-  successDefinition String?
-  specificFocus      String?
+  // Basic info (Common)
+  name            String
+  email           String
+  phone           String
+  company         String?
+  website         String?
+  industry        String?
+  teamSize        String?
 
-  @@index([email])
-  @@index([createdAt])
+  // Fields from /formular (Step-by-step form)
+  whatYouSell        String? @db.Text
+  typicalCustomer    String? @db.Text
+  customerSource     String? @db.Text
+  founderTasks       String? @db.Text
+  magicWand          String? @db.Text
+  marketingChallenge String? @db.Text
+  salesTeam          String? @db.Text
+  salesChallenge     String? @db.Text
+  deliveryBottleneck String? @db.Text
+  recurringProblem   String? @db.Text
+  supportHeadaches   String? @db.Text
+  aiExperience       String? @db.Text
+  aiToolsUsed        String? @db.Text
+  successDefinition  String? @db.Text
+  specificFocus      String? @db.Text
+
+  // Fields from /audit (Single page form)
+  processes          String[] // JSON list of processes selected
+  topTool            String? @db.Text
+  acquisition        String? @db.Text
+  salesProcess       String? @db.Text
+  marketingTeam      String? @db.Text
+  primaryChannel     String? @db.Text
+  crmSystem          String? @db.Text
+  adminTasks         String? @db.Text
+  automatedTasks     String? @db.Text
+  supportProcess     String? @db.Text
+  expectations       String? @db.Text
+  priorities         String? @db.Text
 }

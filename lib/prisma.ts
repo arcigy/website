@@ -1,24 +1,17 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
 
-const prismaClientSingleton = () => {
-  return new PrismaClient()
-}
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
 
-declare global {
-  var prisma: undefined | ReturnType<typeof prismaClientSingleton>
-}
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  });
 
-// Lazy initialization for serverless / edge compatibility
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+
 export function getPrisma(): PrismaClient {
-  if (typeof window !== 'undefined') {
-    throw new Error('Prisma can only be used on the server side.');
-  }
-
-  const prisma = globalThis.prisma ?? prismaClientSingleton()
-  
-  if (process.env.NODE_ENV !== 'production') {
-    globalThis.prisma = prisma
-  }
-  
-  return prisma
+  return prisma;
 }
