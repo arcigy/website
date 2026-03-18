@@ -11,9 +11,9 @@ model AuditSubmission {
   createdAt       DateTime @default(now())
   
   // Basic info (Common)
-  name            String
-  email           String
-  phone           String
+  name            String?
+  email           String?
+  phone           String?
   company         String?
   website         String?
   industry        String?
