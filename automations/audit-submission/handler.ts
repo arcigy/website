@@ -1,5 +1,5 @@
-import { auditSchema, type AuditInput, type AuditOutput } from "./schema";
-import { prisma } from "../../lib/prisma";
+import { auditSchema, type AuditOutput } from "./schema";
+import { getPrisma } from "../../lib/prisma";
 import { Resend } from "resend";
 import type { AutomationResult, AutomationContext } from "../../core/types";
 import { randomUUID } from "crypto";
@@ -17,6 +17,7 @@ export async function handler(
 
   try {
     const input = auditSchema.parse(rawInput);
+    const prisma = getPrisma();
 
     // 1. Save to Database
     const submission = await prisma.auditSubmission.create({
@@ -88,10 +89,11 @@ export async function handler(
       data: { submissionId: submission.id },
       durationMs: Date.now() - ctx.startTime,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     return {
       success: false,
-      error: error.message,
+      error: errorMessage,
       durationMs: Date.now() - ctx.startTime,
     };
   }

@@ -7,11 +7,6 @@ const globalForPrisma = globalThis as unknown as {
 export const getPrisma = (): PrismaClient => {
   if (globalForPrisma.prisma) return globalForPrisma.prisma;
   
-  if (!process.env.DATABASE_URL && process.env.NODE_ENV === 'production') {
-    // During build without DATABASE_URL, return a proxy to avoid constructor errors if possible
-    console.warn('DATABASE_URL is missing during production build.');
-  }
-
   globalForPrisma.prisma = new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   });
@@ -19,4 +14,5 @@ export const getPrisma = (): PrismaClient => {
   return globalForPrisma.prisma;
 };
 
-export const prisma = getPrisma();
+// Remove the constant that triggers initialization on import
+// export const prisma = getPrisma();
