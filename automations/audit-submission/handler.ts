@@ -15,10 +15,12 @@ export async function handler(
 
   try {
     const input = auditSchema.parse(rawInput);
+    console.log('Processing audit submission for:', input.email);
     const prisma = getPrisma();
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     // 1. Save to Database
+    console.log('Attempting DB Insert...');
     const submission = await prisma.auditSubmission.create({
       data: {
         name: input.name,

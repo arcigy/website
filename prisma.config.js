@@ -1,8 +1,6 @@
-const { defineConfig, env } = require("prisma/config");
-
-module.exports = defineConfig({
-  schema: "prisma/schema.prisma",
+module.exports = {
   datasource: {
-    url: env("DATABASE_URL"),
+    url: process.env.DATABASE_URL,
   },
-});
+  schema: "prisma/schema.prisma",
+}
