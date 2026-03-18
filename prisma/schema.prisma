@@ -1,10 +1,10 @@
 generator client {
   provider = "prisma-client-js"
-  engineType = "library"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model AuditSubmission {
@@ -38,7 +38,7 @@ model AuditSubmission {
   specificFocus      String? @db.Text
 
   // Fields from /audit (Single page form)
-  processes          String[] // JSON list of processes selected
+  processes          String[]
   topTool            String? @db.Text
   acquisition        String? @db.Text
   salesProcess       String? @db.Text
