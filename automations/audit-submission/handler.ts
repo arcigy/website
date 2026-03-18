@@ -4,8 +4,6 @@ import { Resend } from "resend";
 import type { AutomationResult, AutomationContext } from "../../core/types";
 import { randomUUID } from "crypto";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function handler(
   rawInput: unknown
 ): Promise<AutomationResult<AuditOutput>> {
@@ -18,6 +16,7 @@ export async function handler(
   try {
     const input = auditSchema.parse(rawInput);
     const prisma = getPrisma();
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     // 1. Save to Database
     const submission = await prisma.auditSubmission.create({
