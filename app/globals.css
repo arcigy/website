@@ -43,6 +43,35 @@ html {
   }
 }
 
+/* Allow native cursor back for specific sections like Calendly */
+.allow-native-cursor, 
+.allow-native-cursor * {
+  cursor: auto !important;
+}
+
+/* Hit Area Extension for better accessibility with custom cursor */
+button, 
+a, 
+[role="button"], 
+input, 
+textarea {
+  position: relative;
+}
+
+/* Create a 15px extension for the hit area to match the cursor size */
+button:not(.nav-item-btn)::after, 
+a:not(.nav-item-btn)::after, 
+[role="button"]:not(.nav-item-btn)::after {
+  content: '';
+  position: absolute;
+  top: -15px;
+  bottom: -15px;
+  left: -15px;
+  right: -15px;
+  pointer-events: auto;
+  z-index: 0;
+}
+
 [role="button"], 
 [role="button"] *, 
 button, 

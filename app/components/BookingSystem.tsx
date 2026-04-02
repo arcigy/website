@@ -210,11 +210,17 @@ export default function BookingSystem() {
             }}
             onMouseEnter={() => {
               const cursor = document.querySelector('.cursor');
-              if (cursor) cursor.classList.add('cursor-hide');
+              if (cursor) {
+                cursor.setAttribute('style', 'display: none !important');
+              }
+              document.body.classList.add('allow-native-cursor');
             }} 
             onMouseLeave={() => {
               const cursor = document.querySelector('.cursor');
-              if (cursor) cursor.classList.remove('cursor-hide');
+              if (cursor) {
+                cursor.removeAttribute('style');
+              }
+              document.body.classList.remove('allow-native-cursor');
             }}
           >
             {mounted ? (
