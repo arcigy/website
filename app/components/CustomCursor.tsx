@@ -5,13 +5,11 @@ import { useEffect, useRef } from 'react';
 export default function CustomCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
-  const ringRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const cursor = cursorRef.current;
     const dot = dotRef.current;
-    const ring = ringRef.current;
-    if (!cursor || !dot || !ring) return;
+    if (!cursor || !dot) return;
 
     // Disable custom cursor on touch devices
     const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -22,8 +20,6 @@ export default function CustomCursor() {
 
     let mouseX = 0;
     let mouseY = 0;
-    let ringX = 0;
-    let ringY = 0;
     let isHoveringMagnetic = false;
 
     const onMove = (e: MouseEvent) => {
@@ -33,19 +29,6 @@ export default function CustomCursor() {
       dot.style.left = `${mouseX}px`;
       dot.style.top = `${mouseY}px`;
     };
-
-    let raf: number;
-    const animate = () => {
-      const easing = isHoveringMagnetic ? 0.35 : 0.12;
-      ringX += (mouseX - ringX) * easing;
-      ringY += (mouseY - ringY) * easing;
-      
-      ring.style.left = `${ringX}px`;
-      ring.style.top = `${ringY}px`;
-      
-      raf = requestAnimationFrame(animate);
-    };
-    raf = requestAnimationFrame(animate);
 
     const onEnterMagnetic = (e: MouseEvent) => {
       isHoveringMagnetic = true;
@@ -136,7 +119,6 @@ export default function CustomCursor() {
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('cursor-reset', resetCursor);
       clearInterval(safetyTimer);
-      cancelAnimationFrame(raf);
       observer.disconnect();
     };
   }, []);
@@ -144,7 +126,7 @@ export default function CustomCursor() {
   return (
     <div ref={cursorRef} className="cursor">
       <div ref={dotRef} className="cursor-dot" />
-      <div ref={ringRef} className="cursor-ring" />
     </div>
   );
 }
+
