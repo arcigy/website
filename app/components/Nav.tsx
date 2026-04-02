@@ -348,7 +348,7 @@ export default function Nav() {
         isOpen={isVideoOpen} 
         onClose={handleCloseModal} 
         isAutoTriggered={isAutoTriggered}
-        videoSrc="https://pub-940e42d6aeea403e9c1c9e8d91684329.r2.dev/Opravaris.mp4"
+        videoSrc="https://pub-940e42d6aeea403e9c1c9e8d91684329.r2.dev/Uv%C3%ADtacie%20Video.mp4"
       />
 
       {/* Virtual Demo Cursor */}
