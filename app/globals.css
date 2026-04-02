@@ -94,8 +94,8 @@ body {
 }
 
 .cursor-dot {
-  width: 6px;
-  height: 6px;
+  width: 10px;
+  height: 10px;
   background: var(--white);
   border-radius: 50%;
   position: absolute;
