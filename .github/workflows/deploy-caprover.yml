@@ -1,0 +1,23 @@
+name: Deploy to CapRover
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create deploy archive
+        run: tar -cf website.tar captain-definition Dockerfile package.json package-lock.json next.config.ts postcss.config.js tsconfig.json app automations components core lib prisma public
+
+      - name: Deploy
+        run: npx caprover@2.3.1 deploy -h http://captain.178.104.175.242.sslip.io -p "$CAPROVER_PASSWORD" -a website -t website.tar
+        env:
+          CAPROVER_PASSWORD: ${{ secrets.CAPROVER_PASSWORD }}
